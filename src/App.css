@@ -2362,3 +2362,91 @@ button { cursor: pointer; }
     min-height: 48px;
   }
 }
+
+/* Neon floating contact buttons - mobile only */
+@media (max-width: 780px) {
+  .mobile-actions {
+    display: flex;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(14px + env(safe-area-inset-bottom));
+    z-index: 1000;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
+    padding: 0 18px;
+    background: transparent;
+    box-shadow: none;
+    pointer-events: none;
+  }
+
+  .mobile-actions .floating-contact {
+    box-sizing: border-box;
+    display: grid;
+    flex: 0 0 62px;
+    width: 62px;
+    height: 62px;
+    padding: 0;
+    place-items: center;
+    border: 2px solid rgba(255, 255, 255, .9);
+    border-radius: 50%;
+    color: #fff;
+    text-decoration: none;
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+    animation: contact-neon-pulse 2.6s ease-in-out infinite;
+    transition: transform .18s ease, filter .18s ease;
+  }
+
+  .mobile-actions .floating-contact:active {
+    transform: scale(.92);
+    filter: brightness(1.12);
+  }
+
+  .mobile-actions .floating-contact.floating-call {
+    background: #176b42;
+    box-shadow:
+      0 0 0 3px rgba(23, 107, 66, .13),
+      0 0 12px rgba(23, 107, 66, .55),
+      0 0 25px rgba(23, 107, 66, .32);
+    font-size: 29px;
+    line-height: 1;
+  }
+
+  .mobile-actions .floating-contact.floating-whatsapp {
+    background: #128c4a;
+    box-shadow:
+      0 0 0 3px rgba(18, 140, 74, .14),
+      0 0 13px rgba(37, 211, 102, .7),
+      0 0 27px rgba(37, 211, 102, .4);
+  }
+
+  .mobile-actions .floating-whatsapp svg {
+    display: block;
+    width: 31px;
+    height: 31px;
+    fill: currentColor;
+  }
+
+  .mobile-actions .floating-contact:focus-visible {
+    outline: 3px solid #f4a340;
+    outline-offset: 5px;
+  }
+}
+
+@keyframes contact-neon-pulse {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-actions .floating-contact {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -148,9 +148,27 @@ function Footer() {
         </div>
       </footer>
 
-      <div className="mobile-actions">
-        <a href={`tel:${PHONE}`}>☎ कॉल करें</a>
-        <a href={`https://wa.me/${WHATSAPP}`}>WhatsApp संपर्क</a>
+      <div className="mobile-actions" aria-label="त्वरित संपर्क">
+        <a
+          className="floating-contact floating-call"
+          href={`tel:${PHONE}`}
+          aria-label="कॉल करें"
+          title="कॉल करें"
+        >
+          <span aria-hidden="true">☎</span>
+        </a>
+        <a
+          className="floating-contact floating-whatsapp"
+          href={`https://wa.me/${WHATSAPP}`}
+          target="_blank"
+          rel="noreferrer"
+          aria-label="WhatsApp पर संपर्क करें"
+          title="WhatsApp संपर्क"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.4 3.6A11.7 11.7 0 0 0 2 17.7L.5 23.5l6-1.6A11.7 11.7 0 0 0 12 23.1h.01A11.6 11.6 0 0 0 23.7 11.5a11.5 11.5 0 0 0-3.3-7.9ZM12 21.1a9.6 9.6 0 0 1-4.9-1.3l-.4-.2-3.6.9 1-3.5-.3-.4A9.5 9.5 0 1 1 12 21.1Zm5.2-7.1c-.3-.2-1.7-.9-2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1a7.8 7.8 0 0 1-2.3-1.4 8.7 8.7 0 0 1-1.6-2c-.2-.3 0-.5.1-.7l.5-.5.2-.5-.1-.5-.9-2.1c-.2-.5-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4a3.2 3.2 0 0 0-1 2.4 5.6 5.6 0 0 0 1.2 3c.2.3 1.7 2.7 4.1 3.8s2.4.7 3.3.6c.7-.1 1.7-.7 1.9-1.4s.2-1.3.1-1.4-.3-.2-.6-.4Z"/>
+          </svg>
+        </a>
       </div>
     </>
   );
