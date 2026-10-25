@@ -2856,7 +2856,7 @@ body {
       rgba(255, 253, 248, 0.70),
       rgba(244, 248, 239, 0.76)
     ),
-    url('/village-background.png');
+    url('/ramswaroop-sarpanch-website/village-background.webp');
   background-position: center, center;
   background-size: cover, cover;
   background-attachment: fixed, fixed;
@@ -2896,7 +2896,7 @@ body::before {
       rgba(255, 253, 248, 0.00),
       rgba(244, 248, 239, 0.00)
     ),
-    url("/village-background.png");
+    url('/ramswaroop-sarpanch-website/village-background.webp');
   background-position: center center;
   background-size: cover;
   background-repeat: no-repeat;
