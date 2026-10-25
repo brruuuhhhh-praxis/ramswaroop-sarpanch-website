@@ -2915,3 +2915,108 @@ main,
 }
 
 /* FINAL VILLAGE BACKGROUND FIX END */
+
+/* PREMIUM 3D BUTTONS START */
+
+/* Raised 3D effect while preserving existing colors */
+.button,
+button,
+.submit-button,
+.mobile-actions a,
+.map-button,
+.support-button,
+.menu-button {
+  position: relative;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    filter 160ms ease;
+  box-shadow:
+    0 5px 0 rgba(20, 62, 42, 0.48),
+    0 8px 16px rgba(20, 62, 42, 0.17),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+/* Green buttons: deep green 3D base */
+.button:not(.button-orange):not(.button-outline),
+.submit-button,
+.support-button,
+.map-button {
+  box-shadow:
+    0 5px 0 #17452f,
+    0 8px 16px rgba(20, 62, 42, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* Orange buttons: warm golden-brown depth */
+.button-orange {
+  box-shadow:
+    0 5px 0 #a95318,
+    0 8px 16px rgba(117, 64, 15, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.30);
+}
+
+/* Outline and menu buttons: subtle cream 3D base */
+.button-outline,
+.menu-button {
+  box-shadow:
+    0 4px 0 #d8d1c3,
+    0 7px 14px rgba(55, 51, 40, 0.12),
+    inset 0 1px 0 #ffffff;
+}
+
+/* Lift on hover */
+.button:hover,
+button:not(:disabled):hover,
+.mobile-actions a:hover,
+.map-button:hover,
+.support-button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.035);
+}
+
+/* Press down like a physical button */
+.button:active,
+button:not(:disabled):active,
+.mobile-actions a:active,
+.map-button:active,
+.support-button:active {
+  transform: translateY(3px);
+  box-shadow:
+    0 1px 0 rgba(20, 62, 42, 0.45),
+    0 2px 5px rgba(20, 62, 42, 0.12),
+    inset 0 2px 4px rgba(0, 0, 0, 0.10);
+}
+
+/* Orange press depth */
+.button-orange:active {
+  box-shadow:
+    0 1px 0 #a95318,
+    0 2px 5px rgba(117, 64, 15, 0.12),
+    inset 0 2px 4px rgba(0, 0, 0, 0.10);
+}
+
+/* Keyboard accessibility */
+.button:focus-visible,
+button:focus-visible,
+.mobile-actions a:focus-visible,
+.map-button:focus-visible,
+.support-button:focus-visible {
+  outline: 3px solid #e9a34f;
+  outline-offset: 3px;
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  button,
+  .submit-button,
+  .mobile-actions a,
+  .map-button,
+  .support-button,
+  .menu-button {
+    transition: none;
+  }
+}
+
+/* PREMIUM 3D BUTTONS END */
