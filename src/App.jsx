@@ -26,10 +26,10 @@ const priorities = [
 ];
 
 const photos = [
-  [(import.meta.env.BASE_URL + "gallery-1.jpg"), "जनसंपर्क की तस्वीर"],
-  [(import.meta.env.BASE_URL + "gallery-2.jpg"), "ग्रामवासियों के साथ मुलाकात"],
-  [(import.meta.env.BASE_URL + "gallery-3.jpg"), "गाँव की गतिविधि"],
-  [(import.meta.env.BASE_URL + "gallery-4.jpg"), "ग्रामीणों के साथ संवाद"],
+  [(import.meta.env.BASE_URL + "gallery-1.webp"), "जनसंपर्क की तस्वीर"],
+  [(import.meta.env.BASE_URL + "gallery-2.webp"), "ग्रामवासियों के साथ मुलाकात"],
+  [(import.meta.env.BASE_URL + "gallery-3.webp"), "गाँव की गतिविधि"],
+  [(import.meta.env.BASE_URL + "gallery-4.webp"), "ग्रामीणों के साथ संवाद"],
   [(import.meta.env.BASE_URL + "rural-meet-01.webp"), "जनसंपर्क और ग्रामीण गतिविधि 1"],
   [(import.meta.env.BASE_URL + "rural-meet-02.webp"), "जनसंपर्क और ग्रामीण गतिविधि 2"],
   [(import.meta.env.BASE_URL + "rural-meet-03.webp"), "जनसंपर्क और ग्रामीण गतिविधि 3"],
@@ -102,7 +102,7 @@ function Header() {
 
       <header className="site-header">
         <Link className="brand" to="/" onClick={() => setMenuOpen(false)}>
-          <img className="brand-face-icon" src={import.meta.env.BASE_URL + "candidate-face.png"} alt="श्री रामस्वरूप बरोड़" />
+          <img className="brand-face-icon" src={import.meta.env.BASE_URL + "candidate-face-optimized.webp"} alt="श्री रामस्वरूप बरोड़" width="160" height="160" decoding="async" />
           <span className="brand-text">
             <b>श्री रामस्वरूप बरोड़</b>
             <small>सरपंच पद के उम्मीदवार</small>
@@ -112,12 +112,14 @@ function Header() {
         <button
           className="menu-button"
           onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="मेन्यू खोलें"
+          aria-label={menuOpen ? "मेन्यू बंद करें" : "मेन्यू खोलें"}
+          aria-expanded={menuOpen}
+          aria-controls="primary-navigation"
         >
           {menuOpen ? "✕" : "☰"}
         </button>
 
-        <nav className={menuOpen ? "navigation nav-open" : "navigation"}>
+        <nav id="primary-navigation" className={menuOpen ? "navigation nav-open" : "navigation"}>
           {navItems.map(([label, path]) => (
             <NavLink
               key={path}
@@ -323,7 +325,7 @@ function HomePage() {
           </div>
         </div>
           <div className="candidate-message-photo">
-            <img src={import.meta.env.BASE_URL + "candidate-full.png"} alt="श्री रामस्वरूप बरोड़ की पूरी राजस्थानी पोशाक वाली तस्वीर" />
+            <img src={import.meta.env.BASE_URL + "candidate-full.webp"} alt="श्री रामस्वरूप बरोड़ की पूरी राजस्थानी पोशाक वाली तस्वीर" width="900" height="1200" loading="lazy" decoding="async" />
           </div>
         </div>
       </section>
@@ -394,7 +396,7 @@ function AboutPage() {
       />
       <div className="about-grid">
         <div className="about-picture">
-          <Photo src={import.meta.env.BASE_URL + "gallery-1.jpg"} alt="जनसंपर्क की तस्वीर" number="1" />
+          <Photo src={import.meta.env.BASE_URL + "gallery-1.webp"} alt="जनसंपर्क की तस्वीर" number="1" />
           <span>कीकर वाली जोहड़ी · जनसंपर्क</span>
         </div>
         <div className="about-copy">
@@ -503,8 +505,8 @@ function GalleryPage() {
         ))}
       </div>
       <p className="gallery-note">
-        नई तस्वीरें जोड़ने के लिए उन्हें public फ़ोल्डर में gallery-1.jpg,
-        gallery-2.jpg आदि नामों से रखें।
+        नई तस्वीरें जोड़ने के लिए उन्हें public फ़ोल्डर में gallery-1.webp,
+        gallery-2.webp आदि नामों से रखें।
       </p>
     </section>
   );
