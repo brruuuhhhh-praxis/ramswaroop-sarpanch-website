@@ -1,0 +1,231 @@
+import React, { useEffect, useState } from "react";
+import {
+  ArrowLeft, ArrowUpRight, Menu, X, MapPin, MessageCircle, ShieldCheck,
+  Droplets, Route, Lightbulb, Phone, Send, CheckCircle2, Leaf, Users,
+  HeartHandshake, BookOpen, Home, UserRound, ClipboardList,
+  MessageSquareText, PhoneCall, Share2, ChevronRight, Star, HandHeart, Images
+} from "lucide-react";
+import { getSupabase, supabaseReady } from "./supabase";
+
+const CONTACT_PHONE = "7568118606";
+const WHATSAPP_NUMBER = "918769723698";
+const categories = ["जन समर्थन", "शुभकामना", "स्थानीय समस्या"];
+const initialForm = { display_name: "", category: "जन समर्थन", message: "" };
+
+const communityPhotos = [
+  { src: "/rural-meet-01.webp", alt: "ग्रामीणों के साथ मुलाकात का दृश्य", caption: "ग्रामीणों के साथ मुलाकात" },
+  { src: "/rural-meet-02.webp", alt: "गाँव में लोगों के साथ साझा तस्वीर", caption: "गाँव में जन-संपर्क" },
+  { src: "/rural-meet-03.webp", alt: "ग्रामीण परिवेश में लोगों के साथ तस्वीर", caption: "स्थानीय लोगों के साथ" },
+  { src: "/rural-meet-04.webp", alt: "गाँव के निवासियों के साथ मुलाकात", caption: "ग्रामीणों के बीच" },
+  { src: "/rural-meet-05.webp", alt: "गाँव में हुई मुलाकात का दृश्य", caption: "गाँव की एक मुलाकात" },
+  { src: "/rural-meet-06.webp", alt: "ग्रामीणों के साथ सार्वजनिक मुलाकात", caption: "साझा पल" },
+  { src: "/rural-meet-07.webp", alt: "गाँव में लोगों के साथ बातचीत का दृश्य", caption: "जन-संवाद के पल" },
+  { src: "/rural-meet-08.webp", alt: "ग्रामीणों के साथ तस्वीर", caption: "कीकर वाली जोहड़ी में" }
+];
+
+const pages = [
+  { id: "about", title: "परिचय", subtitle: "श्री रामस्वरूप बरोड़ के बारे में", icon: UserRound, desc: "परिचय और सार्वजनिक जानकारी" },
+  { id: "agenda", title: "गाँव की प्राथमिकताएँ", subtitle: "स्थानीय मुद्दे और प्रस्ताव", icon: ClipboardList, desc: "पानी, सड़क, सफाई और सुविधाएँ" },
+  { id: "support", title: "जन समर्थन", subtitle: "अपना संदेश दर्ज करें", icon: MessageSquareText, desc: "समर्थन संदेश और अपनी बात साझा करें" },
+  { id: "messages", title: "सार्वजनिक संदेश", subtitle: "स्वीकृत संदेश पढ़ें", icon: HeartHandshake, desc: "समीक्षा के बाद प्रकाशित संदेश" },
+  { id: "rural-message", title: "ग्रामीणों के लिए संदेश", subtitle: "सार्वजनिक संदेश", icon: HandHeart, desc: "गाँव के नागरिकों के नाम संदेश" },
+  { id: "gallery", title: "तस्वीरें", subtitle: "ग्रामीणों के साथ", icon: Images, desc: "सार्वजनिक गतिविधियों की फोटो गैलरी" },
+  { id: "contact", title: "संपर्क", subtitle: "सीधे संपर्क विकल्प", icon: PhoneCall, desc: "कॉल, WhatsApp और संपर्क स्थान" },
+  { id: "faq", title: "सवाल-जवाब", subtitle: "ज़रूरी जानकारी", icon: BookOpen, desc: "वेबसाइट और जन-संवाद से जुड़े सवाल" }
+];
+
+function App() {
+  const [page, setPage] = useState("home");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [form, setForm] = useState(initialForm);
+  const [status, setStatus] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [messagesLoading, setMessagesLoading] = useState(false);
+  const [messagesError, setMessagesError] = useState("");
+  const [shareStatus, setShareStatus] = useState("");
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [suggestionPhoto, setSuggestionPhoto] = useState(null);
+  const [suggestionPhotoPreview, setSuggestionPhotoPreview] = useState("");
+
+  function navigate(id) {
+    setPage(id);
+    setMenuOpen(false);
+    setStatus("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function loadMessages() {
+    if (!supabaseReady) {
+      setMessagesError("सार्वजनिक संदेश दिखाने के लिए Supabase configuration आवश्यक है।");
+      return;
+    }
+    setMessagesLoading(true);
+    setMessagesError("");
+    try {
+      const client = await getSupabase();
+      if (!client) {
+        setMessagesError("Supabase से कनेक्शन नहीं बन पाया। configuration जाँचें।");
+        return;
+      }
+      const { data, error } = await client.from("public_messages")
+        .select("id, display_name, category, message, photo_url, created_at")
+        .eq("status", "approved").order("created_at", { ascending: false }).limit(12);
+      if (error) {
+        console.error("Public messages query failed", error);
+        setMessagesError("संदेश लोड नहीं हो सके। Supabase table और read policy जाँचें, फिर दोबारा कोशिश करें।");
+        return;
+      }
+      setMessages(data || []);
+    } catch (error) {
+      console.error("Public messages could not be loaded", error);
+      setMessagesError("कनेक्शन में समस्या है। इंटरनेट जाँचकर फिर कोशिश करें।");
+    } finally {
+      setMessagesLoading(false);
+    }
+  }
+
+  useEffect(() => { if (page === "messages") loadMessages(); }, [page]);
+
+  // Release local object URLs when a new preview is selected or the form is left.
+  useEffect(() => {
+    if (!suggestionPhotoPreview) return undefined;
+    return () => URL.revokeObjectURL(suggestionPhotoPreview);
+  }, [suggestionPhotoPreview]);
+
+  async function shareSite() {
+    const shareData = { title: "श्री रामस्वरूप बरोड़ | कीकर वाली जोहड़ी", text: "सार्वजनिक जानकारी और जन-संवाद", url: window.location.href };
+    try {
+      if (navigator.share) await navigator.share(shareData);
+      else if (navigator.clipboard) { await navigator.clipboard.writeText(window.location.href); setShareStatus("वेबसाइट लिंक कॉपी हो गया।"); }
+      else setShareStatus("इस ब्राउज़र में शेयर सुविधा उपलब्ध नहीं है।");
+    } catch (e) { if (e?.name !== "AbortError") setShareStatus("लिंक शेयर नहीं हो पाया।"); }
+  }
+
+  async function submitMessage(e) {
+    e.preventDefault();
+    setStatus("");
+    const message = form.message.trim();
+    const name = form.display_name.trim();
+    if (message.length < 4 || message.length > 500) { setStatus("संदेश 4 से 500 अक्षरों के बीच रखें।"); return; }
+    if (name.length > 60) { setStatus("नाम 60 अक्षरों से छोटा रखें।"); return; }
+    if (!supabaseReady) { setStatus("ऑनलाइन फॉर्म चालू करने के लिए Supabase सेटअप बाकी है।"); return; }
+    const allowedImageTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (suggestionPhoto && (!allowedImageTypes.includes(suggestionPhoto.type) || suggestionPhoto.size > 2 * 1024 * 1024)) {
+      setStatus("कृपया 2 MB से छोटी JPG, PNG या WebP तस्वीर चुनें।"); return;
+    }
+    setBusy(true);
+    try {
+      const client = await getSupabase();
+      if (!client) { setStatus("ऑनलाइन फॉर्म चालू करने के लिए Supabase सेटअप बाकी है।"); return; }
+      let photoUrl = null;
+      if (suggestionPhoto) {
+        const ext = (suggestionPhoto.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+        const path = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${ext}`;
+        const { error: uploadError } = await client.storage.from("suggestion-photos").upload(path, suggestionPhoto, { upsert: false, contentType: suggestionPhoto.type });
+        if (uploadError) { setStatus("तस्वीर अपलोड नहीं हुई। Supabase में suggestion-photos storage bucket और policies सेट करें।"); return; }
+        const { data: urlData } = client.storage.from("suggestion-photos").getPublicUrl(path);
+        photoUrl = urlData?.publicUrl || null;
+      }
+      const { error } = await client.from("public_messages").insert({
+        display_name: name || null, category: form.category, message, photo_url: photoUrl, status: "pending"
+      });
+      if (error) { setStatus("संदेश जमा नहीं हो पाया। कृपया बाद में कोशिश करें।"); return; }
+      setForm(initialForm);
+      setSuggestionPhoto(null); setSuggestionPhotoPreview("");
+      setStatus("धन्यवाद! संदेश समीक्षा के लिए जमा हो गया है। स्वीकृति के बाद ही सार्वजनिक होगा।");
+    } catch (error) {
+      console.error("Message submission failed", error);
+      setStatus("कनेक्शन में समस्या है। कृपया इंटरनेट जाँचकर फिर कोशिश करें।");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const Header = () => <header className="site-header">
+    <button className="brand" onClick={() => navigate("home")} aria-label="होम पेज">
+      <img className="brand-avatar" src="/ramswaroop-portrait.jpg" alt="रामस्वरूप बरोड़" />
+      <span className="brand-copy"><strong>श्री रामस्वरूप <b>बरोड़</b></strong><small><MapPin size={12}/> कीकर वाली जोहड़ी · सूरतगढ़</small></span>
+    </button>
+    <nav className={menuOpen ? "main-nav nav-open" : "main-nav"}>
+      {pages.slice(0, 4).map(p => <button key={p.id} className={page === p.id ? "nav-link active" : "nav-link"} onClick={() => navigate(p.id)}>{p.title}</button>)}
+      <button className="nav-contact" onClick={() => navigate("contact")}>संपर्क <ArrowUpRight size={15}/></button>
+    </nav>
+    <button className="mobile-menu" onClick={() => setMenuOpen(!menuOpen)} aria-label="मेन्यू">{menuOpen ? <X/> : <Menu/>}</button>
+  </header>;
+
+  const PageTitle = ({ eyebrow, title, description }) => <div className="page-title"><span className="eyebrow">{eyebrow}</span><h1>{title}</h1>{description && <p>{description}</p>}</div>;
+
+  const HomePage = () => <main className="home-page">
+    <section className="hero-v2">
+      <div className="hero-copy-v2">
+        <div className="hero-pill"><span/> उम्मीदवार का परिचय और सार्वजनिक जानकारी</div>
+        <div className="candidate-role">सरपंच पद के उम्मीदवार · चुनाव: 5 नवंबर 2026</div><h1><span>श्री रामस्वरूप</span><br/><em>बरोड़</em></h1>
+        <p>कीकर वाली जोहड़ी, तहसील सूरतगढ़ — सार्वजनिक परिचय, स्थानीय मुद्दों और जन-संवाद की जानकारी।</p>
+        <div className="hero-actions-v2">
+          <button className="btn btn-primary" onClick={() => navigate("agenda")}>गाँव की प्राथमिकताएँ <ArrowUpRight size={17}/></button>
+          <button className="btn btn-outline" onClick={() => navigate("support")}><MessageCircle size={17}/> जन समर्थन दर्ज करें</button>
+        </div>
+        <div className="hero-trust"><ShieldCheck size={16}/> सार्वजनिक संदेश समीक्षा के बाद ही दिखेंगे</div>
+      </div>
+      <div className="hero-person">
+        <div className="portrait-halo"></div>
+        <img className="hero-portrait" src="/ramswaroop-portrait.jpg" alt="रामस्वरूप बरोड़" fetchPriority="high" decoding="async" />
+        <div className="portrait-label"><span className="label-dot"></span><span><strong>श्री रामस्वरूप बरोड़</strong><small>कीकर वाली जोहड़ी · सूरतगढ़</small></span></div>
+        <div className="portrait-stamp">सरपंच पद<br/>के उम्मीदवार</div>
+      </div>
+      <div className="hero-bottom"><span>स्थानीय मुद्दे</span><i/> <span>जन-सहभागिता</span><i/> <span>जवाबदेही</span></div>
+    </section>
+    <section className="home-shortcuts home-shortcuts-compact">
+      <div className="section-heading"><div><span className="eyebrow">मुख्य पेज</span><h2>ज़रूरी जानकारी</h2></div><p>विस्तार के लिए किसी एक विकल्प को चुनें।</p></div>
+      <div className="shortcut-grid">{pages.filter(p => ["about", "agenda", "support", "messages", "rural-message", "gallery"].includes(p.id)).map((p, i) => { const Icon = p.icon; return <button className="shortcut-card" key={p.id} onClick={() => navigate(p.id)}><span className={`shortcut-icon tone-${i%4}`}><Icon size={22}/></span><span className="shortcut-text"><strong>{p.title}</strong><small>{p.desc}</small></span><ChevronRight className="shortcut-arrow" size={19}/></button>; })}</div>
+    </section>
+  </main>;
+
+  const AboutPage = () => <main className="content-page">{PageTitle({ eyebrow: "01 / सार्वजनिक परिचय", title: "श्री रामस्वरूप बरोड़", description: "कीकर वाली जोहड़ी, तहसील सूरतगढ़ — परिचय, स्थानीय मुद्दों और जन-संपर्क की जानकारी।" })}<div className="about-panel"><img src="/ramswaroop-portrait.jpg" alt="रामस्वरूप बरोड़" /><div><span className="eyebrow">आपका स्थानीय सार्वजनिक मंच</span><h2>गाँव की बात सुनने और साझा करने की जगह</h2><p>यह वेबसाइट श्री रामस्वरूप बरोड़ के सार्वजनिक परिचय और सरपंच पद के उम्मीदवार के रूप में उनसे संबंधित जानकारी के लिए है। यहाँ कीकर वाली जोहड़ी की स्थानीय जरूरतों और नागरिकों के संदेशों से जुड़ी जानकारी साझा की जा सकती है।</p><p>गाँव के विकास से जुड़े मुद्दों पर सबसे उपयोगी शुरुआत है—स्थानीय लोगों की बात सुनना, समस्या का सही विवरण दर्ज करना, संबंधित विभाग और ग्राम सभा के माध्यम से समाधान की प्रक्रिया समझना, और प्रगति की जानकारी साझा करना।</p><p>यहाँ पेयजल, रास्तों, सफाई, रोशनी और सरकारी योजनाओं जैसे विषयों पर सुझाव भेजे जा सकते हैं। कृपया किसी समस्या के साथ उसका स्थान और संभव हो तो संबंधित विवरण लिखें; आधार, बैंक विवरण या अन्य निजी जानकारी न भेजें।</p><button className="btn btn-primary" onClick={() => navigate("contact")}>संपर्क विकल्प देखें <ArrowUpRight size={16}/></button></div></div><div className="about-detail-grid"><article className="agenda-v2-card"><span className="agenda-v2-icon"><MessageSquareText/></span><h3>जन-संवाद</h3><p>अपनी बात, सुझाव या स्थानीय समस्या सम्मानजनक भाषा में साझा करें।</p><button onClick={() => navigate("support")}>अपना संदेश भेजें <ArrowUpRight size={15}/></button></article><article className="agenda-v2-card"><span className="agenda-v2-icon"><ClipboardList/></span><h3>स्थानीय प्राथमिकताएँ</h3><p>गाँव की जरूरतों को विषयवार पढ़ें और जिस विषय पर आपकी राय हो, उसे दर्ज करें।</p><button onClick={() => navigate("agenda")}>प्राथमिकताएँ देखें <ArrowUpRight size={15}/></button></article><article className="agenda-v2-card"><span className="agenda-v2-icon"><ShieldCheck/></span><h3>पारदर्शिता</h3><p>यहाँ दिए गए विषय संभावित प्राथमिकताएँ हैं, पूर्ण हुए कार्य या पक्के वादे नहीं।</p><button onClick={() => navigate("faq")}>जानकारी पढ़ें <ArrowUpRight size={15}/></button></article></div><div className="notice-box"><ShieldCheck/><p>इस परिचय में अपुष्ट निजी उपलब्धियाँ, पद, अनुभव या वादे नहीं जोड़े गए हैं। सत्यापित विवरण मिलने पर ही उन्हें प्रकाशित करना उचित होगा।</p></div></main>;
+
+  const AgendaPage = () => <main className="content-page">{PageTitle({ eyebrow: "02 / स्थानीय प्राथमिकताएँ", title: "गाँव के मुद्दे और प्रस्ताव", description: "नीचे दिए गए विषय संभावित प्राथमिकताएँ हैं। वास्तविक स्थिति और प्रस्तावों की पुष्टि स्थानीय स्तर पर की जानी चाहिए।" })}<div className="agenda-v2-grid">
+    {[{icon:Droplets,title:"पेयजल और जल-निकासी",desc:"पानी की उपलब्धता, नियमित आपूर्ति और जल निकासी से जुड़ी जरूरतों की पहचान।"},{icon:Route,title:"सड़क और रास्ते",desc:"खराब रास्तों की पहचान और संबंधित विभागों तक मरम्मत संबंधी विषय पहुँचाना।"},{icon:Leaf,title:"सफाई और कचरा प्रबंधन",desc:"सार्वजनिक स्थानों की स्वच्छता और कचरा निपटान व्यवस्था पर ध्यान।"},{icon:Lightbulb,title:"स्ट्रीट लाइट",desc:"अंधेरे वाले सार्वजनिक स्थानों की पहचान और रोशनी की जरूरतों पर प्रस्ताव।"},{icon:BookOpen,title:"योजनाओं की जानकारी",desc:"सरकारी योजनाओं, पात्रता और जरूरी दस्तावेजों की सही जानकारी तक पहुँच।"},{icon:Users,title:"ग्राम सभा में संवाद",desc:"स्थानीय जरूरतों पर खुली चर्चा और प्राथमिकताओं को दर्ज करने के अवसर।"}].map((x,i)=>{const Icon=x.icon;return <article className="agenda-v2-card" key={x.title}><span className="agenda-index">0{i+1}</span><div className="agenda-v2-icon"><Icon size={24}/></div><h3>{x.title}</h3><p>{x.desc}</p></article>;})}
+    </div><div className="agenda-single-action"><button className="btn btn-primary" onClick={() => {setForm({...initialForm,category:"स्थानीय समस्या",message:""});navigate("support");}}>इन विषयों पर अपनी बात साझा करें <ArrowUpRight size={16}/></button></div><div className="notice-box"><ShieldCheck/><p>यह सूची प्रस्तावित विषयों की है; इसे पूरे हो चुके काम या निश्चित चुनावी वादे के रूप में न समझें।</p></div></main>;
+
+  const SupportPage = () => <main className="content-page">{PageTitle({ eyebrow: "03 / जन-सहभागिता", title: "जन समर्थन", description: "अपना संदेश दर्ज करें। कृपया आधार, बैंक विवरण या अन्य संवेदनशील निजी जानकारी साझा न करें।" })}<div className="support-layout"><aside className="support-aside"><div className="big-icon"><MessageSquareText size={28}/></div><h2>जन समर्थन संदेश दर्ज करें।</h2><p>आपका संदेश समीक्षा के लिए जमा होगा। स्वीकृति के बाद ही सार्वजनिक संदेश बोर्ड पर दिखेगा।</p><div className="mini-rule"><ShieldCheck size={18}/><span>सुरक्षित समीक्षा<br/><small>सभी संदेश तुरंत सार्वजनिक नहीं होते।</small></span></div></aside><form className="support-form-v2" onSubmit={submitMessage}><div className="form-heading"><strong>जन समर्थन फॉर्म</strong><span>* आवश्यक</span></div><label>नाम <small>(वैकल्पिक)</small><input maxLength="60" value={form.display_name} onChange={e=>setForm({...form,display_name:e.target.value})} placeholder="अपना नाम"/></label><label>संदेश का प्रकार<select value={form.category} onChange={e=>setForm({...form,category:e.target.value})}>{categories.map(c=><option key={c}>{c}</option>)}</select></label><label>आपका संदेश *<textarea required minLength="4" maxLength="500" rows="5" value={form.message} onChange={e=>setForm({...form,message:e.target.value})} placeholder="अपना समर्थन संदेश या अपनी बात लिखें…"/></label><label>तस्वीर जोड़ें <small>(वैकल्पिक · अधिकतम 2 MB)</small><input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>{const f=e.target.files?.[0]||null;if(!f){setSuggestionPhoto(null);setSuggestionPhotoPreview("");return;}const ok=["image/jpeg","image/png","image/webp"].includes(f.type)&&f.size<=2*1024*1024;if(!ok){e.target.value="";setSuggestionPhoto(null);setSuggestionPhotoPreview("");setStatus("कृपया 2 MB से छोटी JPG, PNG या WebP तस्वीर चुनें।");return;}setStatus("");setSuggestionPhoto(f);setSuggestionPhotoPreview(URL.createObjectURL(f));}} /></label>{suggestionPhotoPreview&&<div className="suggestion-photo-preview"><img src={suggestionPhotoPreview} alt="आपकी चुनी हुई तस्वीर का पूर्वावलोकन"/><button type="button" onClick={()=>{setSuggestionPhoto(null);setSuggestionPhotoPreview("");}}>तस्वीर हटाएँ</button></div>}<div className="char-count">{form.message.length}/500 अक्षर</div><button className="btn btn-primary submit-btn" disabled={busy}>{busy?"जमा हो रहा है…":"समर्थन संदेश जमा करें"} <Send size={16}/></button>{status&&<p className="form-status" role="status">{status}</p>}{!supabaseReady&&<p className="form-help">ऑनलाइन फॉर्म चालू करने के लिए Supabase सेटअप आवश्यक है।</p>}<p className="fine-print">संदेश की समीक्षा की जा सकती है। स्वीकृत संदेश सार्वजनिक रूप से दिख सकते हैं।</p></form></div></main>;
+
+  const MessagesPage = () => <main className="content-page">{PageTitle({ eyebrow: "04 / सार्वजनिक संवाद", title: "स्वीकृत सार्वजनिक संदेश", description: "जन समर्थन, शुभकामनाएँ और स्थानीय संदेश समीक्षा और स्वीकृति के बाद यहाँ प्रदर्शित होंगे।" })}{!supabaseReady?<div className="empty-v2"><MessageCircle size={30}/><h3>संदेश बोर्ड सेटअप बाकी है</h3><p>Supabase URL और public anon key जोड़कर schema लागू करने के बाद स्वीकृत संदेश यहाँ दिखेंगे।</p></div>:messagesLoading?<div className="empty-v2" role="status">संदेश लोड हो रहे हैं…</div>:messagesError?<div className="empty-v2" role="alert"><MessageCircle size={30}/><h3>संदेश लोड नहीं हो सके</h3><p>{messagesError}</p><button className="btn btn-outline" type="button" onClick={loadMessages}>फिर कोशिश करें</button></div>:messages.length===0?<div className="empty-v2"><MessageCircle size={30}/><h3>अभी कोई स्वीकृत संदेश नहीं</h3><p>संदेश समीक्षा के बाद मंजूर होंगे, तभी यहाँ दिखाई देंगे।</p><button className="btn btn-outline" type="button" onClick={loadMessages}>रीफ्रेश करें</button></div>:<><div className="messages-toolbar"><span>{messages.length} हाल के स्वीकृत संदेश</span><button className="btn btn-outline" type="button" onClick={loadMessages} disabled={messagesLoading}>रीफ्रेश करें</button></div><div className="public-message-grid">{messages.map(m=><article className="public-message" key={m.id}><span><CheckCircle2 size={14}/>{m.category}</span><p>{m.message}</p>{m.photo_url&&<img className="public-message-photo" src={m.photo_url} alt="सुझाव के साथ भेजी गई तस्वीर" loading="lazy" decoding="async"/>}<small>{m.display_name||"गाँव के एक सदस्य"} · {new Date(m.created_at).toLocaleDateString("hi-IN")}</small></article>)}</div></>}</main>;
+
+  const RuralMessagePage = () => <main className="content-page">{PageTitle({ eyebrow: "05 / ग्रामीण नागरिकों के नाम", title: "ग्रामीणों के लिए संदेश", description: "श्री रामस्वरूप बरोड़ जी की ओर से गाँव के सभी नागरिकों के लिए सम्मान, संवाद और जन-भागीदारी पर संदेश।" })}<section className="rural-message-shell"><div className="rural-message-top"><img src="/ramswaroop-portrait.jpg" alt="रामस्वरूप बरोड़"/><div><span className="eyebrow">सादर संदेश</span><h2>श्री रामस्वरूप बरोड़</h2><p>कीकर वाली जोहड़ी · तहसील सूरतगढ़</p></div></div><div className="rural-message-copy"><p className="message-greeting">मेरे गाँव के सभी ग्रामीण मतदाताओं, माताओं-बहनों, बुजुर्गों, युवाओं और किसान भाइयों को मेरा नमस्कार।</p><p>गाँव की वास्तविक जरूरतों को समझने के लिए हर परिवार की बात सुनना और लोगों के अनुभवों को सम्मान देना जरूरी है। पेयजल, रास्ते, साफ-सफाई, रोशनी, शिक्षा, स्वास्थ्य और सरकारी योजनाओं की सही जानकारी जैसे विषय गाँव के दैनिक जीवन से जुड़े हैं। इन मुद्दों पर आपकी राय, सुझाव और स्थानीय अनुभव महत्वपूर्ण हैं।</p><p>मेरी इच्छा है कि गाँव से जुड़े विषयों पर बातचीत आपसी सम्मान, भाईचारे और पारदर्शिता के साथ हो। किसी समस्या या सुझाव को साझा करते समय उसका स्थान, समस्या कब से है और उससे किन लोगों को परेशानी होती है—जैसी जानकारी देने से विषय को बेहतर ढंग से समझने में मदद मिलती है।</p><p>ग्राम सभा, स्थानीय निकायों और संबंधित सरकारी विभागों की प्रक्रियाओं को समझना तथा किसी भी जानकारी की पुष्टि करना भी जरूरी है। कोई भी मुद्दा हो, उसे शांतिपूर्ण और जिम्मेदार संवाद के माध्यम से सामने रखना हम सबकी साझा जिम्मेदारी है।</p><p>लोकतंत्र में हर नागरिक की भागीदारी और स्वतंत्र निर्णय का सम्मान होना चाहिए। कृपया उपलब्ध जानकारी को समझकर, अपने विवेक से और बिना किसी दबाव के अपना निर्णय लें। इस मंच के माध्यम से मैं गाँव के मुद्दों पर सुझाव सुनने और संवाद बनाए रखने का प्रयास करूँगा।</p><p className="message-signoff">सादर,<br/><strong>श्री रामस्वरूप बरोड़</strong><br/><span>कीकर वाली जोहड़ी, तहसील सूरतगढ़</span></p></div><div className="rural-message-actions"><button className="btn btn-primary" onClick={() => navigate("support")}>अपना सुझाव साझा करें <ArrowUpRight size={16}/></button><button className="btn btn-outline" onClick={() => navigate("contact")}>संपर्क विकल्प देखें <PhoneCall size={16}/></button></div></section><div className="notice-box"><ShieldCheck/><p>यह संदेश जन-संवाद और नागरिक भागीदारी पर केंद्रित है। स्थानीय स्थिति, संपर्क विवरण और प्रकाशित संदेशों की अंतिम पुष्टि उम्मीदवार/वेबसाइट प्रकाशक द्वारा की जानी चाहिए।</p></div></main>;
+
+  const GalleryPage = () => <main className="content-page gallery-page">
+    {PageTitle({ eyebrow: "06 / फोटो गैलरी", title: "ग्रामीणों के साथ तस्वीरें", description: "कीकर वाली जोहड़ी में ग्रामीण परिवेश और लोगों के साथ हुई मुलाकातों की तस्वीरें। तस्वीरों को मूल दृश्य के अनुरूप रखा गया है।" })}
+    <div className="gallery-note"><ShieldCheck size={18}/><p>तस्वीरें वेबसाइट पर उपलब्ध कराने से पहले इनमें दिखाई दे रहे लोगों की निजता और प्रकाशन की अनुमति का ध्यान रखें। तस्वीरें किसी व्यक्ति के समर्थन या किसी विशेष घटना का प्रमाण अपने-आप नहीं मानी जानी चाहिए।</p></div>
+    <div className="community-gallery-grid">{communityPhotos.map((photo, index) => <button className="community-photo-card" key={photo.src} onClick={() => setSelectedPhoto(photo)} aria-label={`${photo.caption}, बड़ी तस्वीर देखें`}><div className="community-photo-frame"><img src={photo.src} alt={photo.alt} loading="lazy" decoding="async"/><span className="photo-zoom"><ArrowUpRight size={18}/></span></div><span className="community-photo-caption"><strong>{photo.caption}</strong><small>फोटो {String(index+1).padStart(2,"0")} · कीकर वाली जोहड़ी</small></span></button>)}</div>
+    {selectedPhoto && <div className="photo-lightbox" role="dialog" aria-modal="true" aria-label="बड़ी तस्वीर" onClick={() => setSelectedPhoto(null)}><button className="photo-lightbox-close" onClick={(event) => { event.stopPropagation(); setSelectedPhoto(null); }} aria-label="तस्वीर बंद करें"><X size={22}/></button><img src={selectedPhoto.src} alt={selectedPhoto.alt} onClick={event => event.stopPropagation()}/><p>{selectedPhoto.caption}</p></div>}
+  </main>;
+
+  const ContactPage = () => <main className="content-page">{PageTitle({ eyebrow: "06 / संपर्क", title: "संपर्क में रहें", description: "नीचे दिए गए सार्वजनिक संपर्क विकल्पों का उपयोग करें।" })}<div className="contact-v2-grid"><a className="contact-v2-card" href={`tel:${CONTACT_PHONE}`}><span className="contact-v2-icon"><PhoneCall/></span><div><small>सीधे कॉल करें</small><h3>श्री रामस्वरूप बरोड़</h3><p>75681 18606</p></div><ArrowUpRight/></a><a className="contact-v2-card" href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noreferrer"><span className="contact-v2-icon whatsapp"><MessageCircle/></span><div><small>टीम WhatsApp</small><h3>श्री जयपाल बरोड़</h3><p>+91 87697 23698</p></div><ArrowUpRight/></a><div className="contact-v2-card address-card"><span className="contact-v2-icon"><MapPin/></span><div><small>संपर्क स्थान</small><h3>आवास स्थल</h3><p>कीकर वाली जोहड़ी, तहसील सूरतगढ़</p></div></div></div><button className="btn btn-primary" onClick={shareSite}><Share2 size={17}/> वेबसाइट शेयर करें</button>{shareStatus&&<p className="form-status">{shareStatus}</p>}</main>;
+
+  const FaqPage = () => <main className="content-page">{PageTitle({ eyebrow: "07 / मदद", title: "अक्सर पूछे जाने वाले सवाल", description: "वेबसाइट, स्थानीय मुद्दों और जन-संवाद से जुड़ी जानकारी।" })}<div className="faq-v2-list">{[["इस वेबसाइट का उद्देश्य क्या है?","सार्वजनिक परिचय, स्थानीय प्राथमिकताओं और संपर्क विकल्पों की जानकारी देना।"],["गाँव की समस्या कैसे भेजें?","जन-संवाद पेज पर फॉर्म भरकर संदेश जमा करें।"],["क्या हर संदेश सार्वजनिक होगा?","नहीं। केवल समीक्षा के बाद स्वीकृत संदेश प्रदर्शित होंगे।"],["क्या विकास कार्य पूरे हो चुके हैं?","यहाँ दिए विषय संभावित प्राथमिकताएँ हैं; इन्हें पूर्ण हो चुके काम के रूप में नहीं दर्शाया गया है।"],["संपर्क कैसे करें?","संपर्क पेज पर कॉल और WhatsApp बटन उपलब्ध हैं।"],["तस्वीरें कहाँ देख सकते हैं?","होम पेज के तस्वीरों वाले हिस्से से फोटो गैलरी खोलें।"]].map(([q,a])=><details key={q}><summary>{q}</summary><p>{a}</p></details>)}</div></main>;
+
+  const renderPage = () => {
+    switch(page) {
+      case "about": return AboutPage();
+      case "agenda": return AgendaPage();
+      case "support": return SupportPage();
+      case "messages": return MessagesPage();
+      case "rural-message": return RuralMessagePage();
+      case "gallery": return GalleryPage();
+      case "contact": return ContactPage();
+      case "faq": return FaqPage();
+      default: return HomePage();
+    }
+  };
+
+  return <div className="site-shell">
+    <div className="top-ribbon"><span><MapPin size={13}/> कीकर वाली जोहड़ी, सूरतगढ़</span><span>सार्वजनिक जानकारी · जन-संवाद</span></div>
+    {Header()}
+    {renderPage()}
+    <footer className="site-footer"><div className="footer-main"><button className="footer-brand" onClick={()=>navigate("home")}><img src="/ramswaroop-portrait.jpg" alt=""/><span><strong>श्री रामस्वरूप बरोड़</strong><small>कीकर वाली जोहड़ी · सूरतगढ़</small></span></button><p>स्थानीय मुद्दों, सार्वजनिक जानकारी और जन-सहभागिता के लिए बनाया गया मंच।<br/><span className="developer-credit">वेबसाइट डिज़ाइन एवं विकास: जितेंद्र सोनी</span></p><div className="footer-actions"><button onClick={()=>navigate("contact")}>संपर्क <ArrowUpRight size={14}/></button><button onClick={shareSite}>शेयर <Share2 size={14}/></button></div></div><div className="footer-bottom"><span>प्रकाशित जानकारी की सत्यता की पुष्टि प्रकाशक द्वारा की जानी चाहिए।</span><button onClick={()=>navigate("faq")}>FAQ</button></div></footer>
+    <div className="mobile-bottom-nav"><button className={page==="home"?"selected":""} onClick={()=>navigate("home")}><Home size={19}/><span>होम</span></button><button className={page==="agenda"?"selected":""} onClick={()=>navigate("agenda")}><ClipboardList size={19}/><span>प्राथमिकताएँ</span></button><button className={page==="support"?"selected":""} onClick={()=>navigate("support")}><MessageCircle size={19}/><span>सुझाव</span></button><button className={page==="contact"?"selected":""} onClick={()=>navigate("contact")}><Phone size={19}/><span>संपर्क</span></button></div>
+  </div>;
+}
+
+export default App;

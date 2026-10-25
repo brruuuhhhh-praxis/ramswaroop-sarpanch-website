@@ -1,0 +1,290 @@
+import { useState } from 'react';
+import {
+  ArrowDown, ArrowRight, BookOpen, CheckCircle2, ChevronRight, Droplets,
+  HeartHandshake, Landmark, Leaf, MapPin, Menu, MessageCircle, ShieldCheck,
+  Trophy, Users, X, Zap, Route, Wheat, Phone, Send, Sparkles
+} from 'lucide-react';
+import './App.css';
+
+/*
+  CONFIGURATION — before publishing, replace these values with verified details.
+  Do not publish an invented supporter count or an unverified election symbol.
+*/
+const CANDIDATE_NAME = 'रामस्वरूप बरोड़';
+const WHATSAPP_PHONE = '917568118606'; // Verified number supplied by the user
+const WHATSAPP_GROUP_LINK = 'https://chat.whatsapp.com/BRxXAXcJ8wd3xZSZPUAHxX?s=cl&p=a&mlu=4&ilr=4';
+const CANDIDATE_PHOTO = '/ramswaroop-bror.png'; // Candidate photo supplied by the user
+const ELECTION_SYMBOL_IMAGE = ''; // e.g. '/election-symbol.png' after verifying the official symbol
+const VERIFIED_SUPPORTER_COUNT = null; // Use a verified count only; otherwise keep null.
+
+const manifesto = [
+  {
+    icon: Droplets,
+    number: '01',
+    title: 'शुद्ध पेयजल',
+    body: 'हर घर तक साफ़ पानी की उपलब्धता, पानी की समस्या की पहचान और संबंधित विभाग तक प्रभावी पैरवी।',
+    tag: 'स्वास्थ्य और सम्मान',
+  },
+  {
+    icon: Route,
+    number: '02',
+    title: 'पक्की सड़कें व नालियाँ',
+    body: 'टूटी सड़कों, नालियों और जलभराव वाले स्थानों की प्राथमिकता तय कर समाधान के लिए काम।',
+    tag: 'सुगम आवागमन',
+  },
+  {
+    icon: BookOpen,
+    number: '03',
+    title: 'शिक्षा व खेल मैदान',
+    body: 'प्रतियोगी परीक्षा की तैयारी करने वाले युवाओं के लिए पुस्तकालय की पहल और खेल सुविधाओं की पैरवी।',
+    tag: 'युवा और भविष्य',
+  },
+  {
+    icon: ShieldCheck,
+    number: '04',
+    title: 'पारदर्शिता व योजनाएँ',
+    body: 'पात्र लोगों को सरकारी योजनाओं की जानकारी, आवेदन में मदद और पंचायत के कामकाज में पारदर्शिता की पहल।',
+    tag: 'निष्पक्ष सेवा',
+  },
+];
+
+const supportInfo = [
+  { icon: Droplets, text: 'पानी, सफ़ाई और नालियों की समस्या' },
+  { icon: Route, text: 'सड़क, रोशनी और सार्वजनिक सुविधाएँ' },
+  { icon: BookOpen, text: 'शिक्षा, पुस्तकालय और खेल' },
+  { icon: HeartHandshake, text: 'पेंशन व सरकारी योजनाओं की जानकारी' },
+];
+
+function isConfiguredPhone() {
+  return /^91\d{10}$/.test(WHATSAPP_PHONE);
+}
+
+function isConfiguredGroupLink() {
+  return WHATSAPP_GROUP_LINK.startsWith('https://chat.whatsapp.com/') &&
+    !WHATSAPP_GROUP_LINK.includes('REPLACE_');
+}
+
+function ElectionSymbol() {
+  const [imageFailed, setImageFailed] = useState(false);
+  return (
+    <div className="symbol-badge" aria-label="चुनाव चिह्न">
+      <span className="symbol-kicker"><Sparkles size={13} /> चुनाव चिह्न</span>
+      <div className="symbol-art">
+        {ELECTION_SYMBOL_IMAGE && !imageFailed ? (
+          <img src={ELECTION_SYMBOL_IMAGE} alt="उम्मीदवार का सत्यापित चुनाव चिह्न" onError={() => setImageFailed(true)} />
+        ) : (
+          <div className="symbol-placeholder"><Wheat size={34} strokeWidth={1.5} /><span>आधिकारिक चिह्न</span></div>
+        )}
+      </div>
+      <span className="symbol-foot">चिह्न की पुष्टि के बाद यहाँ जोड़ें</span>
+    </div>
+  );
+}
+
+function CandidatePortrait() {
+  const [photoFailed, setPhotoFailed] = useState(false);
+  return (
+    <div className="portrait-shell">
+      <div className="portrait-ring" />
+      <div className="portrait-frame">
+        {!photoFailed ? (
+          <img src={CANDIDATE_PHOTO} alt="रामस्वरूप बरोड़ की तस्वीर" onError={() => setPhotoFailed(true)} />
+        ) : (
+          <div className="portrait-placeholder">
+            <div className="portrait-initials">रब</div>
+            <span>ताऊ रामस्वरूप बरोड़</span>
+            <small>उम्मीदवार की असली फोटो यहाँ जोड़ें</small>
+          </div>
+        )}
+      </div>
+      <div className="portrait-caption"><span className="caption-dot" /> मेहनत • सादगी • सेवा</div>
+      <ElectionSymbol />
+    </div>
+  );
+}
+
+function WhatsAppIcon({ size = 20 }) {
+  return <MessageCircle size={size} strokeWidth={2.25} aria-hidden="true" />;
+}
+
+export default function App() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [form, setForm] = useState({ name: '', ward: '', issue: '' });
+  const [formStatus, setFormStatus] = useState('');
+  const [formError, setFormError] = useState(false);
+
+  const openGroup = () => {
+    if (isConfiguredGroupLink()) {
+      window.open(WHATSAPP_GROUP_LINK, '_blank', 'noopener,noreferrer');
+    } else {
+      document.getElementById('jan-samvad')?.scrollIntoView({ behavior: 'smooth' });
+      setFormStatus('WhatsApp ग्रुप का असली invite link जोड़ना बाकी है। तब तक नीचे दिए फॉर्म से समस्या तैयार कर सकते हैं।');
+      setFormError(true);
+    }
+  };
+
+  const submitIssue = (event) => {
+    event.preventDefault();
+    setFormStatus('');
+    setFormError(false);
+    if (!form.name.trim() || !form.ward.trim() || form.issue.trim().length < 5) {
+      setFormStatus('कृपया नाम, वार्ड नंबर और समस्या सही से भरें।');
+      setFormError(true);
+      return;
+    }
+    if (!isConfiguredPhone()) {
+      setFormStatus('WhatsApp नंबर सेट करना बाकी है। कोड में WHATSAPP_PHONE को देश कोड सहित 12 अंकों के नंबर से बदलें।');
+      setFormError(true);
+      return;
+    }
+    const message = [
+      'रामस्वरूप बरोड़ जी की वेबसाइट से जन-समस्या संदेश',
+      `नाम: ${form.name.trim()}`,
+      `वार्ड नंबर: ${form.ward.trim()}`,
+      `समस्या: ${form.issue.trim()}`,
+    ].join('\n');
+    const url = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+    setFormStatus('WhatsApp खुल रहा है। संदेश भेजने से पहले उसे पढ़कर पुष्टि कर लें।');
+    setFormError(false);
+  };
+
+  const navItems = [
+    ['परिचय', '#parichay'],
+    ['विकास रो संकल्प', '#sankalp'],
+    ['जन-समस्या', '#jan-samvad'],
+  ];
+
+  return (
+    <div className="site-shell">
+      <div className="top-strip"><span className="top-strip-dot" /> ग्राम पंचायत की आवाज़, गाँव के साथ</div>
+      <header className="site-header">
+        <a className="brand" href="#home" aria-label="होम पर जाएँ">
+          <span className="brand-mark">रब</span>
+          <span className="brand-copy"><strong>रामस्वरूप बरोड़</strong><small>सरपंच पद के उम्मीदवार</small></span>
+        </a>
+        <button className="mobile-menu-button" type="button" aria-label={menuOpen ? 'मेन्यू बंद करें' : 'मेन्यू खोलें'} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+          {menuOpen ? <X size={23} /> : <Menu size={23} />}
+        </button>
+        <nav className={menuOpen ? 'main-nav nav-open' : 'main-nav'} aria-label="मुख्य नेविगेशन">
+          {navItems.map(([label, href]) => <a href={href} key={href} onClick={() => setMenuOpen(false)}>{label}</a>)}
+          <button className="nav-cta" type="button" onClick={() => { setMenuOpen(false); openGroup(); }}><WhatsAppIcon size={17} /> WhatsApp से जुड़ें</button>
+        </nav>
+      </header>
+
+      <main>
+        <section className="hero" id="home">
+          <div className="hero-pattern" aria-hidden="true" />
+          <div className="hero-inner">
+            <div className="hero-copy">
+              <div className="eyebrow"><span className="eyebrow-line" /> किकरवाली जोहड़ी के लिए एक नई पहल</div>
+              <h1>गाँव री सेवा,<br /><span>मन सूं, ईमान सूं।</span></h1>
+              <p className="hero-slogan">जिण दानां रो आटा पीस्यो,<br />उण रो कदे न धरस्यो उधार।<br /><em>मेहनत अर ईमानदारी सूं</em><br />करस्यां पंचायत रो विकास अपार!</p>
+              <p className="hero-description">आटा चक्की की मेहनत से सीखा भरोसा और सेवा का भाव—अब गाँव की जरूरतों को सुनने और मिलकर समाधान खोजने का संकल्प।</p>
+              <div className="hero-actions">
+                <button className="button button-whatsapp button-large" onClick={openGroup} type="button"><WhatsAppIcon size={20} /> व्हाट्सएप ग्रुप से जुड़ें <ArrowRight size={18} /></button>
+                <a className="button button-glass button-large" href="#sankalp">विकास रो संकल्प <ArrowDown size={18} /></a>
+              </div>
+              <div className="hero-values"><span><CheckCircle2 size={16} /> सादगी</span><span><CheckCircle2 size={16} /> निष्पक्षता</span><span><CheckCircle2 size={16} /> जन-सुनवाई</span></div>
+            </div>
+            <CandidatePortrait />
+          </div>
+          <a className="hero-scroll" href="#parichay"><span>आगे पढ़ें</span><ArrowDown size={15} /></a>
+        </section>
+
+        <section className="trust-band" aria-label="उम्मीदवार का परिचय">
+          <div className="trust-item"><span className="trust-icon"><Wheat size={20} /></span><div><strong>आटा चक्की का अनुभव</strong><small>मेहनत से जुड़ी पहचान</small></div></div>
+          <div className="trust-item"><span className="trust-icon"><HeartHandshake size={20} /></span><div><strong>सीधा जन-संवाद</strong><small>हर बात सुनने की पहल</small></div></div>
+          <div className="trust-item"><span className="trust-icon"><Landmark size={20} /></span><div><strong>पारदर्शी पंचायत</strong><small>जवाबदेही का संकल्प</small></div></div>
+        </section>
+
+        <section className="section about-section" id="parichay">
+          <div className="section-side-label"><span>01</span> परिचय</div>
+          <div className="about-grid">
+            <div className="about-visual">
+              <div className="about-quote-mark">“</div>
+              <p>जिणां पसीनो बहायो है,<br />उणां रो भरोसेमंद हाथ —</p>
+              <div className="about-visual-rule" />
+              <span>मेहनत की कमाई, सेवा की समझ</span>
+              <Wheat className="about-wheat" size={94} strokeWidth={0.8} />
+            </div>
+            <div className="about-content">
+              <div className="section-kicker">ताऊ रामस्वरूप जी रो परिचय</div>
+              <h2>मेहनत से कमाया भरोसा,<br /><span>गाँव के नाम एक संकल्प।</span></h2>
+              <p>वर्षों तक आटा चक्की चलाना सिर्फ़ रोज़गार नहीं—यह मेहनत, धैर्य और लोगों से रोज़ सीधे जुड़ने का अनुभव है। इसी काम ने सिखाया कि हर परिवार की जरूरत अलग होती है और हर व्यक्ति की बात ध्यान से सुनना जरूरी है।</p>
+              <p>अब इसी सादगी और सेवा-भाव के साथ, गाँव की जरूरी समस्याओं को पहचानने, प्राथमिकताएँ तय करने और ग्राम पंचायत व संबंधित विभागों तक बात पहुँचाने की पहल है। विकास के काम गाँव की भागीदारी और नियमों के अनुसार आगे बढ़ें—यही सोच है।</p>
+              <div className="about-signoff"><span className="signoff-line" /><div><strong>रामस्वरूप बरोड़</strong><small>सरपंच पद के उम्मीदवार</small></div></div>
+              <p className="about-highlight">“गांव री उन्नति खातर, चालो रामस्वरूप ताऊ रे साथ!”</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="section manifesto-section" id="sankalp">
+          <div className="section-heading">
+            <div className="section-kicker">02 / विकास की प्राथमिकताएँ</div>
+            <h2>विकास रो <span>संकल्प</span></h2>
+            <p>गाँव की जरूरतों पर आधारित चार प्रमुख प्राथमिकताएँ। इन कामों को उपलब्ध संसाधनों, ग्राम सभा की राय और संबंधित विभागों के नियमों के अनुसार आगे बढ़ाने का प्रयास रहेगा।</p>
+          </div>
+          <div className="manifesto-grid">
+            {manifesto.map((item) => {
+              const Icon = item.icon;
+              return <article className="manifesto-card" key={item.number}>
+                <div className="card-topline"><span className="card-number">{item.number}</span><span className="manifesto-icon"><Icon size={23} strokeWidth={1.8} /></span></div>
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+                <div className="card-foot"><span>{item.tag}</span><ChevronRight size={17} /></div>
+              </article>;
+            })}
+          </div>
+          <div className="more-priorities"><div className="more-priorities-icon"><Zap size={21} /></div><div><strong>गाँव की दूसरी जरूरी बातें भी उतनी ही अहम</strong><p>स्ट्रीट लाइट, सफ़ाई और कचरा प्रबंधन, पेंशन आवेदन में मदद, किसानों व पशुपालकों की समस्याएँ तथा जरूरत के अनुसार अन्य स्थानीय मुद्दे।</p></div></div>
+        </section>
+
+        <section className="supporter-section" aria-label="जन भागीदारी">
+          <div className="supporter-inner">
+            <div className="supporter-icon"><Users size={28} /></div>
+            <div className="supporter-copy"><span className="section-kicker">गाँव की भागीदारी</span><h2>{Number.isFinite(VERIFIED_SUPPORTER_COUNT) && VERIFIED_SUPPORTER_COUNT > 0 ? `${VERIFIED_SUPPORTER_COUNT.toLocaleString('en-IN')}+` : 'हर आवाज़'} <span>{Number.isFinite(VERIFIED_SUPPORTER_COUNT) && VERIFIED_SUPPORTER_COUNT > 0 ? 'सत्यापित समर्थक' : 'महत्वपूर्ण है'}</span></h2><p>{Number.isFinite(VERIFIED_SUPPORTER_COUNT) && VERIFIED_SUPPORTER_COUNT > 0 ? 'समर्थकों की संख्या सत्यापित रिकॉर्ड के आधार पर दिखाई जा रही है।' : 'अपनी राय, सुझाव या गाँव की समस्या साझा करें—सकारात्मक बदलाव संवाद से शुरू होता है।'}</p></div>
+            <a className="supporter-link" href="#jan-samvad">अपनी बात रखें <ArrowRight size={17} /></a>
+          </div>
+        </section>
+
+        <section className="section issue-section" id="jan-samvad">
+          <div className="issue-grid">
+            <div className="issue-copy">
+              <div className="section-side-label"><span>03</span> जन-संवाद</div>
+              <div className="section-kicker">आपकी समस्या, आपकी आवाज़</div>
+              <h2>जन-समस्या<br /><span>निवारण</span></h2>
+              <p>अपना नाम, वार्ड नंबर और समस्या लिखें। बटन दबाने पर WhatsApp में संदेश तैयार होगा; भेजने से पहले आप उसे देख और बदल सकेंगे।</p>
+              <div className="issue-list">{supportInfo.map(({ icon: Icon, text }) => <div className="issue-list-item" key={text}><span><Icon size={17} /></span>{text}</div>)}</div>
+              <div className="privacy-note"><ShieldCheck size={18} /><span>कृपया आधार नंबर, बैंक विवरण या अन्य संवेदनशील निजी जानकारी साझा न करें।</span></div>
+            </div>
+            <form className="issue-form" onSubmit={submitIssue}>
+              <div className="form-header"><div><span className="form-eyebrow">सीधा संदेश</span><h3>अपनी बात लिखें</h3></div><span className="form-icon"><MessageCircle size={24} /></span></div>
+              <label htmlFor="resident-name">आपका नाम <span>*</span></label>
+              <input id="resident-name" name="name" autoComplete="name" maxLength={80} required placeholder="पूरा नाम लिखें" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              <label htmlFor="ward-number">वार्ड नंबर <span>*</span></label>
+              <input id="ward-number" name="ward" maxLength={30} required placeholder="जैसे — वार्ड 4" value={form.ward} onChange={(e) => setForm({ ...form, ward: e.target.value })} />
+              <label htmlFor="issue-detail">आपकी समस्या <span>*</span></label>
+              <textarea id="issue-detail" name="issue" required minLength={5} maxLength={1000} rows={4} placeholder="समस्या और जगह की जानकारी लिखें…" value={form.issue} onChange={(e) => setForm({ ...form, issue: e.target.value })} />
+              <div className="form-counter">{form.issue.length}/1000 अक्षर</div>
+              <button type="submit" className="button button-whatsapp button-submit"><WhatsAppIcon size={20} /> सीधा WhatsApp पर संदेश भेजें <Send size={17} /></button>
+              {formStatus && <p className={formError ? 'form-status form-status-error' : 'form-status'} role="status">{formStatus}</p>}
+              <small className="form-disclaimer">यह फॉर्म WhatsApp संदेश तैयार करता है। संदेश अपने-आप नहीं भेजा जाता।</small>
+            </form>
+          </div>
+        </section>
+
+        <section className="closing-cta">
+          <div className="closing-pattern" aria-hidden="true" />
+          <div className="closing-content"><div className="section-kicker">गाँव के साथ, गाँव के लिए</div><h2>बात गाँव की हो,<br /><span>तो फैसला भी गाँव की राय से।</span></h2><p>सुझाव दें, समस्या बताएँ और गाँव के भविष्य पर संवाद में शामिल हों।</p><button className="button button-light button-large" type="button" onClick={openGroup}><WhatsAppIcon size={20} /> WhatsApp समूह से जुड़ें <ArrowRight size={18} /></button></div>
+        </section>
+      </main>
+
+      <footer className="site-footer">
+        <div className="footer-main"><a className="brand brand-footer" href="#home"><span className="brand-mark">रब</span><span className="brand-copy"><strong>रामस्वरूप बरोड़</strong><small>सरपंच पद के उम्मीदवार</small></span></a><p>मेहनत, सादगी और जन-संवाद के साथ—गाँव की जरूरतों को मिलकर समझने की पहल।</p><a className="footer-top" href="#home">ऊपर जाएँ <ArrowDown size={15} /></a></div>
+        <div className="footer-bottom"><span>© {new Date().getFullYear()} रामस्वरूप बरोड़</span><span><MapPin size={14} /> किकरवाली जोहड़ी, तहसील सूरतगढ़, राजस्थान</span><span className="footer-note">सभी विकास बिंदु प्रस्तावित प्राथमिकताएँ हैं, पूर्ण हो चुके कार्यों का दावा नहीं।</span></div>
+      </footer>
+
+      <button className="floating-whatsapp" type="button" aria-label="WhatsApp से जुड़ें" onClick={openGroup}><WhatsAppIcon size={25} /><span>WhatsApp</span></button>
+    </div>
+  );
+}

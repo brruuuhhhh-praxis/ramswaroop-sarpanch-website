@@ -1,0 +1,760 @@
+import React, { useState } from 'react';
+import {
+  ArrowDown,
+  ArrowRight,
+  BookOpen,
+  CheckCircle2,
+  ChevronRight,
+  Droplets,
+  HeartHandshake,
+  Landmark,
+  Leaf,
+  MapPin,
+  Menu,
+  MessageCircle,
+  ShieldCheck,
+  Trophy,
+  Users,
+  X,
+  Zap,
+  Route,
+  Wheat,
+  Phone,
+  Send,
+  Sparkles,
+  Construction,
+  GraduationCap,
+  HeartPulse,
+  Quote,
+  Share2,
+  ArrowUpRight
+} from 'lucide-react';
+import './App.css';
+
+/*
+  CONFIGURATION — before publishing, replace these values with verified details.
+  Do not publish an invented supporter count or an unverified election symbol.
+*/
+const CANDIDATE_NAME = 'श्री रामस्वरूप बरोड़';
+const WHATSAPP_PHONE = '917568118606'; // Verified number supplied by the user
+const WHATSAPP_GROUP_LINK = 'https://chat.whatsapp.com/BRxXAXcJ8wd3xZSZPUAHxX?s=cl&p=a&mlu=4&ilr=4';
+const CANDIDATE_PHOTO = '/ramswaroop-bror.png'; // Candidate photo supplied by the user
+const ELECTION_SYMBOL_IMAGE = ''; // e.g. '/election-symbol.png' after verifying the official symbol
+const VERIFIED_SUPPORTER_COUNT = null; // Use a verified count only; otherwise keep null.
+
+const manifesto = [
+  {
+    icon: Droplets,
+    number: '01',
+    title: 'शुद्ध पेयजल',
+    body: 'हर घर तक साफ़ पानी की उपलब्धता, पानी की समस्या की पहचान और संबंधित विभाग तक प्रभावी पैरवी।',
+    tag: 'स्वास्थ्य और सम्मान',
+  },
+  {
+    icon: Route,
+    number: '02',
+    title: 'पक्की सड़कें व नालियाँ',
+    body: 'टूटी सड़कों, नालियों और जलभराव वाले स्थानों की प्राथमिकता तय कर समाधान के लिए काम।',
+    tag: 'सुगम आवागमन',
+  },
+  {
+    icon: BookOpen,
+    number: '03',
+    title: 'शिक्षा व खेल मैदान',
+    body: 'प्रतियोगी परीक्षा की तैयारी करने वाले युवाओं के लिए पुस्तकालय की पहल और खेल सुविधाओं की पैरवी।',
+    tag: 'युवा और भविष्य',
+  },
+  {
+    icon: ShieldCheck,
+    number: '04',
+    title: 'पारदर्शिता व योजनाएँ',
+    body: 'पात्र लोगों को सरकारी योजनाओं की जानकारी, आवेदन में मदद और पंचायत के कामकाज में पारदर्शिता की पहल।',
+    tag: 'निष्पक्ष सेवा',
+  },
+];
+
+const supportInfo = [
+  { icon: Droplets, text: 'पानी, सफ़ाई और नालियों की समस्या' },
+  { icon: Route, text: 'सड़क, रोशनी और सार्वजनिक सुविधाएँ' },
+  { icon: BookOpen, text: 'शिक्षा, पुस्तकालय और खेल' },
+  { icon: HeartHandshake, text: 'पेंशन व सरकारी योजनाओं की जानकारी' },
+];
+
+function isConfiguredPhone() {
+  return /^91\d{10}$/.test(WHATSAPP_PHONE);
+}
+
+function isConfiguredGroupLink() {
+  return WHATSAPP_GROUP_LINK.startsWith('https://chat.whatsapp.com/') &&
+    !WHATSAPP_GROUP_LINK.includes('REPLACE_');
+}
+
+function ElectionSymbol() {
+  const [imageFailed, setImageFailed] = useState(false);
+  return (
+    <div className="symbol-badge" aria-label="चुनाव चिह्न">
+      <span className="symbol-kicker"><Sparkles size={13} /> चुनाव चिह्न</span>
+      <div className="symbol-art">
+        {ELECTION_SYMBOL_IMAGE && !imageFailed ? (
+          <img src={ELECTION_SYMBOL_IMAGE} alt="उम्मीदवार का सत्यापित चुनाव चिह्न" onError={() => setImageFailed(true)} />
+        ) : (
+          <div className="symbol-placeholder"><Wheat size={34} strokeWidth={1.5} /><span>आधिकारिक चिह्न</span></div>
+        )}
+      </div>
+      <span className="symbol-foot">चिह्न की पुष्टि के बाद यहाँ जोड़ें</span>
+    </div>
+  );
+}
+
+function CandidatePortrait() {
+  const [photoFailed, setPhotoFailed] = useState(false);
+  return (
+    <div className="portrait-shell">
+      <div className="portrait-ring" />
+      <div className="portrait-frame">
+        {!photoFailed ? (
+          <img src={CANDIDATE_PHOTO} alt="श्री रामस्वरूप बरोड़ की तस्वीर" onError={() => setPhotoFailed(true)} />
+        ) : (
+          <div className="portrait-placeholder">
+            <div className="portrait-initials">रब</div>
+            <span>ताऊ श्री रामस्वरूप बरोड़</span>
+            <small>उम्मीदवार की असली फोटो यहाँ जोड़ें</small>
+          </div>
+        )}
+      </div>
+      <div className="portrait-caption"><span className="caption-dot" /> मेहनत • सादगी • सेवा</div>
+      <ElectionSymbol />
+    </div>
+  );
+}
+
+function WhatsAppIcon({ size = 20 }) {
+  return <MessageCircle size={size} strokeWidth={2.25} aria-hidden="true" />;
+}
+
+
+/* BPraxis Advanced Sections v1 */
+
+const advancedManifestoItems = [
+  {
+    icon: Droplets,
+    title: "स्वच्छ पेयजल",
+    text: "पेयजल की समस्याएँ सुनना और उपलब्ध योजनाओं के अनुसार समाधान के लिए संबंधित विभागों से समन्वय करना।",
+    label: "मूलभूत सुविधा",
+  },
+  {
+    icon: Construction,
+    title: "सड़क एवं नालियाँ",
+    text: "सड़क, जल निकासी और सफाई की जरूरतों को प्राथमिकता के आधार पर पंचायत के सामने रखना।",
+    label: "बुनियादी ढाँचा",
+  },
+  {
+    icon: GraduationCap,
+    title: "शिक्षा एवं युवा",
+    text: "शिक्षा, खेल और युवा विकास के लिए उपलब्ध योजनाओं तथा स्थानीय सहयोग को बढ़ावा देना।",
+    label: "शिक्षित गाँव",
+  },
+  {
+    icon: HeartPulse,
+    title: "स्वास्थ्य एवं सहायता",
+    text: "स्वास्थ्य सेवाओं, पेंशन और पात्र परिवारों को सरकारी योजनाओं की जानकारी पाने में सहयोग करना।",
+    label: "जनसेवा",
+  },
+];
+
+const sampleTestimonials = [
+  {
+    quote: "ईमानदारी और सरल व्यवहार अच्छे जनप्रतिनिधित्व की महत्वपूर्ण पहचान हैं।",
+  },
+  {
+    quote: "अनुभव का लाभ गाँव की जरूरतें समझने और सही प्राथमिकताएँ तय करने में मिल सकता है।",
+  },
+  {
+    quote: "पंचायत में सबकी बात सुनी जाए और विकास के काम पारदर्शिता से हों।",
+  },
+];
+
+function AdvancedManifestoSection() {
+  return (
+    <section className="advanced-section advanced-manifesto" id="advanced-vikas">
+      <div className="advanced-heading">
+        <span className="advanced-kicker">गाँव की प्राथमिकताएँ</span>
+        <h2>विकास का <span>संकल्प</span></h2>
+        <p>
+          गाँव की जरूरतों को सुनकर उपलब्ध संसाधनों और योजनाओं के अनुसार
+          विकास के लिए प्रयास।
+        </p>
+      </div>
+
+      <div className="advanced-manifesto-grid">
+        {advancedManifestoItems.map((item, index) => {
+          const Icon = item.icon;
+          return (
+            <article className="advanced-manifesto-card" key={item.title}>
+              <div className="advanced-card-top">
+                <span className="advanced-card-number">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className="advanced-icon-wrap">
+                  <Icon size={27} strokeWidth={1.8} />
+                </span>
+              </div>
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+              <div className="advanced-card-footer">
+                <span>{item.label}</span>
+                <ArrowUpRight size={18} aria-hidden="true" />
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function CampaignTestimonialsSection() {
+  return (
+    <section className="advanced-section advanced-testimonials" id="janata-ki-pukar">
+      <div className="advanced-heading">
+        <span className="advanced-kicker">जनसंवाद</span>
+        <h2>जनता की <span>पुकार</span></h2>
+        <p>ईमानदारी, अनुभव और जवाबदेही पर खुला संवाद।</p>
+      </div>
+
+      <div className="advanced-testimonial-grid">
+        {sampleTestimonials.map((item, index) => (
+          <article className="advanced-testimonial-card" key={index}>
+            <Quote size={29} className="advanced-quote-icon" aria-hidden="true" />
+            <blockquote>“{item.quote}”</blockquote>
+            <div className="advanced-testimonial-label">
+              <CheckCircle2 size={18} aria-hidden="true" />
+              नमूना संदेश — वास्तविक बयान नहीं
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <p className="advanced-testimonial-note">
+        प्रकाशित करने से पहले वास्तविक ग्रामीण का बयान, नाम और अनुमति
+        सत्यापित करें। ये कार्ड अभी केवल डिज़ाइन के नमूने हैं।
+      </p>
+    </section>
+  );
+}
+
+function CandidateOathSection() {
+  return (
+    <section className="advanced-oath-section" id="ram-swaroop-ka-vachan">
+      <div className="advanced-oath-card">
+        <div className="advanced-oath-icon">
+          <ShieldCheck size={34} />
+        </div>
+        <span className="advanced-oath-kicker">जनसेवा का संकल्प</span>
+        <h2>रामस्वरूप जी का वचन</h2>
+        <p className="advanced-oath-lead">
+          आटा चक्की की मेहनत ने सिखाया है कि भरोसा कमाया जाता है
+          और ईमानदारी से निभाया जाता है।
+        </p>
+        <div className="advanced-oath-divider" />
+        <p className="advanced-oath-text">
+          सेवा का अवसर मिलने पर गाँव की जरूरतों को प्राथमिकता देने,
+          सभी के साथ निष्पक्ष व्यवहार करने और पंचायत के कामकाज में
+          पारदर्शिता तथा जवाबदेही के लिए प्रयास करने का संकल्प।
+          सभी कार्य उपलब्ध नियमों और संसाधनों के अनुसार किए जाएँगे।
+        </p>
+        <div className="advanced-oath-signature">
+          <CheckCircle2 size={19} />
+          ईमानदारी • पारदर्शिता • जनसेवा
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CampaignShareSection() {
+  const pageUrl =
+    typeof window !== "undefined"
+      ? window.location.href.split("#")[0]
+      : "https://ramswaroopbror.netlify.app";
+
+  const shareText =
+    "श्री रामस्वरूप बरोड़ की वेबसाइट देखें और गाँव के विकास की प्राथमिकताएँ जानें:";
+
+  const whatsappUrl =
+    "https://wa.me/?text=" +
+    encodeURIComponent(shareText + "\n" + pageUrl);
+
+  return (
+    <section className="advanced-share-section" id="share-this-site">
+      <div className="advanced-share-inner">
+        <div className="advanced-share-copy">
+          <span className="advanced-kicker">गाँव तक पहुँचाएँ</span>
+          <h2>अच्छी जानकारी, सबके साथ</h2>
+          <p>वेबसाइट का लिंक परिवार और गाँव के लोगों के साथ साझा करें।</p>
+        </div>
+        <a
+          className="advanced-share-button"
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Share2 size={22} />
+          <span>यह वेबसाइट WhatsApp पर शेयर करें</span>
+          <ArrowUpRight size={19} />
+        </a>
+      </div>
+    </section>
+  );
+}
+
+
+
+
+function drawOfficialPoster(canvas, width, height) {
+  return new Promise((resolve) => {
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    let finished = false;
+
+    const archPath = (x, y, w, h) => {
+      ctx.beginPath();
+      ctx.moveTo(x, y + h);
+      ctx.lineTo(x, y + h * 0.30);
+      ctx.bezierCurveTo(x, y + h * 0.05, x + w * 0.20, y, x + w / 2, y);
+      ctx.bezierCurveTo(x + w * 0.80, y, x + w, y + h * 0.05, x + w, y + h * 0.30);
+      ctx.lineTo(x + w, y + h);
+      ctx.closePath();
+    };
+
+    const paint = (photo) => {
+      if (finished) return;
+      finished = true;
+
+      const w = width, h = height;
+      const cream = "#f8f0df";
+      const maroon = "#651d35";
+      const deep = "#28151f";
+      const gold = "#d8b366";
+      const ink = "#2a2020";
+
+      ctx.fillStyle = cream;
+      ctx.fillRect(0, 0, w, h);
+
+      // Subtle Rajasthani-inspired background details
+      ctx.strokeStyle = "rgba(101,29,53,0.12)";
+      ctx.lineWidth = Math.max(1, w * 0.001);
+      for (let x = 18; x < w; x += 42) {
+        ctx.beginPath();
+        ctx.moveTo(x, 125);
+        ctx.lineTo(x, h - 125);
+        ctx.stroke();
+      }
+
+      // Double ornamental border
+      ctx.strokeStyle = maroon;
+      ctx.lineWidth = Math.max(3, w * 0.004);
+      ctx.strokeRect(w * 0.018, h * 0.018, w * 0.964, h * 0.964);
+      ctx.strokeStyle = gold;
+      ctx.lineWidth = Math.max(1, w * 0.0015);
+      ctx.strokeRect(w * 0.029, h * 0.030, w * 0.942, h * 0.940);
+
+      // Royal header
+      ctx.fillStyle = deep;
+      ctx.fillRect(w * 0.03, h * 0.03, w * 0.94, h * 0.14);
+      ctx.fillStyle = gold;
+      ctx.fillRect(w * 0.03, h * 0.162, w * 0.94, h * 0.008);
+
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#fff8e9";
+      ctx.font = `bold ${Math.round(w * 0.037)}px "Noto Sans Devanagari", "Nirmala UI", sans-serif`;
+      ctx.fillText("ग्राम पंचायत चुनाव", w / 2, h * 0.082);
+      ctx.fillStyle = gold;
+      ctx.font = `bold ${Math.round(w * 0.019)}px "Noto Sans Devanagari", "Nirmala UI", sans-serif`;
+      ctx.fillText("जनसेवा  •  समर्पण  •  विकास", w / 2, h * 0.133);
+
+      // Decorative sunburst behind the portrait
+      const sunX = w * 0.215, sunY = h * 0.48;
+      ctx.strokeStyle = "rgba(216,179,102,0.48)";
+      ctx.lineWidth = Math.max(2, w * 0.002);
+      for (let i = 0; i < 24; i++) {
+        const a = (Math.PI * 2 * i) / 24;
+        ctx.beginPath();
+        ctx.moveTo(sunX + Math.cos(a) * w * 0.15, sunY + Math.sin(a) * w * 0.15);
+        ctx.lineTo(sunX + Math.cos(a) * w * 0.19, sunY + Math.sin(a) * w * 0.19);
+        ctx.stroke();
+      }
+
+      // Arch-shaped candidate portrait
+      const px = w * 0.065, py = h * 0.215, pw = w * 0.31, ph = h * 0.60;
+      ctx.fillStyle = gold;
+      archPath(px - w * 0.012, py - w * 0.012, pw + w * 0.024, ph + w * 0.024);
+      ctx.fill();
+
+      ctx.save();
+      archPath(px, py, pw, ph);
+      ctx.clip();
+      ctx.fillStyle = "#e2d1b5";
+      ctx.fillRect(px, py, pw, ph);
+
+      if (photo && photo.naturalWidth) {
+        const scale = Math.max(pw / photo.width, ph / photo.height);
+        const sw = pw / scale, sh = ph / scale;
+        const sx = (photo.width - sw) / 2, sy = (photo.height - sh) / 2;
+        ctx.drawImage(photo, sx, sy, sw, sh, px, py, pw, ph);
+      } else {
+        ctx.fillStyle = maroon;
+        ctx.textAlign = "center";
+        ctx.font = `bold ${Math.round(w * 0.025)}px sans-serif`;
+        ctx.fillText("CANDIDATE PHOTO", px + pw / 2, py + ph / 2);
+      }
+      ctx.restore();
+
+      ctx.strokeStyle = maroon;
+      ctx.lineWidth = Math.max(3, w * 0.004);
+      archPath(px, py, pw, ph);
+      ctx.stroke();
+
+      // Name and role
+      const tx = w * 0.425;
+      ctx.textAlign = "left";
+      ctx.fillStyle = maroon;
+      ctx.font = `bold ${Math.round(w * 0.024)}px "Noto Sans Devanagari", "Nirmala UI", sans-serif`;
+      ctx.fillText("सरपंच पद हेतु प्रत्याशी", tx, h * 0.275);
+
+      ctx.fillStyle = gold;
+      ctx.fillRect(tx, h * 0.305, w * 0.39, h * 0.006);
+
+      ctx.fillStyle = deep;
+      ctx.font = `bold ${Math.round(w * 0.051)}px "Noto Sans Devanagari", "Nirmala UI", sans-serif`;
+      ctx.fillText("श्री रामस्वरूप", tx, h * 0.405);
+
+      // Gold nameplate for surname
+      const nx = tx - w * 0.012, ny = h * 0.445, nw = w * 0.39, nh = h * 0.12;
+      ctx.fillStyle = maroon;
+      ctx.fillRect(nx, ny, nw, nh);
+      ctx.fillStyle = gold;
+      ctx.fillRect(nx, ny, w * 0.008, nh);
+      ctx.fillStyle = "#fff8e9";
+      ctx.font = `bold ${Math.round(w * 0.060)}px "Noto Sans Devanagari", "Nirmala UI", sans-serif`;
+      ctx.fillText("बरोड", tx + w * 0.012, h * 0.505);
+
+      ctx.fillStyle = ink;
+      ctx.font = `bold ${Math.round(w * 0.022)}px "Noto Sans Devanagari", "Nirmala UI", sans-serif`;
+      ctx.fillText("ग्राम: कीकरवाली जोहरी", tx, h * 0.625);
+      ctx.fillText("तहसील: सूरतगढ़, राजस्थान", tx, h * 0.675);
+
+      // Slogan ribbon
+      const ry = h * 0.725;
+      ctx.fillStyle = gold;
+      ctx.beginPath();
+      ctx.moveTo(tx, ry);
+      ctx.lineTo(w * 0.93, ry);
+      ctx.lineTo(w * 0.90, ry + h * 0.055);
+      ctx.lineTo(tx, ry + h * 0.055);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = deep;
+      ctx.font = `bold ${Math.round(w * 0.025)}px "Noto Sans Devanagari", "Nirmala UI", sans-serif`;
+      ctx.fillText("आपका विश्वास, हमारा संकल्प", tx + w * 0.015, ry + h * 0.028);
+
+      // Footer
+      ctx.fillStyle = deep;
+      ctx.fillRect(w * 0.03, h * 0.845, w * 0.94, h * 0.125);
+      ctx.fillStyle = gold;
+      ctx.fillRect(w * 0.03, h * 0.845, w * 0.94, h * 0.007);
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#fff8e9";
+      ctx.font = `bold ${Math.round(w * 0.022)}px "Noto Sans Devanagari", "Nirmala UI", sans-serif`;
+      ctx.fillText("गांव का सम्मान  •  बेहतर भविष्य", w / 2, h * 0.895);
+      ctx.fillStyle = gold;
+      ctx.font = `${Math.round(w * 0.017)}px "Noto Sans Devanagari", "Nirmala UI", sans-serif`;
+      ctx.fillText("आपका आशीर्वाद और समर्थन अपेक्षित है", w / 2, h * 0.938);
+
+      resolve();
+    };
+
+    const photo = new Image();
+    photo.onload = () => paint(photo);
+    photo.onerror = () => paint(null);
+    photo.src = "/ramswaroop-bror.png";
+    if (photo.complete) {
+      if (photo.naturalWidth) paint(photo);
+      else if (photo.naturalWidth === 0 && photo.src === "") paint(null);
+    }
+  });
+}
+
+function OfficialCampaignPoster() {
+  const shareText =
+    "श्री रामस्वरूप बरोड — ग्राम कीकरवाली जोहरी, तहसील सूरतगढ़, राजस्थान। आपका विश्वास, हमारा संकल्प।";
+
+  return (
+    <section className="official-poster-section" id="official-campaign-poster">
+      <div className="official-poster-inner">
+        <p className="official-poster-kicker">SPECIAL RAJASTHANI EDITION</p>
+        <h2>श्री रामस्वरूप बरोड — आधिकारिक पोस्टर</h2>
+        <p className="official-poster-description">
+          राजस्थानी रॉयल डिज़ाइन में पोस्टर देखें, हाई-क्वालिटी PNG डाउनलोड करें या WhatsApp पर साझा करें।
+        </p>
+
+        <div className="official-poster-preview">
+          <canvas
+            aria-label="श्री रामस्वरूप बरोड का चुनाव पोस्टर"
+            ref={(node) => {
+              if (node && !node.dataset.posterDrawn) {
+                node.dataset.posterDrawn = "1";
+                drawOfficialPoster(node, 1600, 900);
+              }
+            }}
+          />
+        </div>
+
+        <div className="official-poster-actions">
+          <button
+            type="button"
+            className="official-poster-button official-poster-download"
+            onClick={async () => {
+              const canvas = document.createElement("canvas");
+              await drawOfficialPoster(canvas, 3200, 1800);
+              const blob = await new Promise((resolve) =>
+                canvas.toBlob(resolve, "image/png")
+              );
+
+              if (!blob) {
+                window.alert("PNG तैयार नहीं हो पाया। दोबारा कोशिश करें।");
+                return;
+              }
+
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = "shri-ramswaroop-barod-campaign-poster.png";
+              document.body.appendChild(link);
+              link.click();
+              link.remove();
+              setTimeout(() => URL.revokeObjectURL(url), 2000);
+            }}
+          >
+            PNG डाउनलोड करें
+          </button>
+
+          <button
+            type="button"
+            className="official-poster-button official-poster-share"
+            onClick={() => {
+              const message = shareText + " " + window.location.href;
+              window.open(
+                "https://wa.me/?text=" + encodeURIComponent(message),
+                "_blank",
+                "noopener,noreferrer"
+              );
+            }}
+          >
+            WhatsApp पर शेयर करें
+          </button>
+        </div>
+        <p className="official-poster-note">
+          चुनाव चिन्ह की सही फाइल उपलब्ध होने पर उसे अलग से जोड़ा जा सकता है।
+        </p>
+      </div>
+    </section>
+  );
+}
+
+
+export default function App() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [form, setForm] = useState({ name: '', ward: '', issue: '' });
+  const [formStatus, setFormStatus] = useState('');
+  const [formError, setFormError] = useState(false);
+
+  const openGroup = () => {
+    if (isConfiguredGroupLink()) {
+      window.open(WHATSAPP_GROUP_LINK, '_blank', 'noopener,noreferrer');
+    } else {
+      document.getElementById('jan-samvad')?.scrollIntoView({ behavior: 'smooth' });
+      setFormStatus('WhatsApp ग्रुप का असली invite link जोड़ना बाकी है। तब तक नीचे दिए फॉर्म से समस्या तैयार कर सकते हैं।');
+      setFormError(true);
+    }
+  };
+
+  const submitIssue = (event) => {
+    event.preventDefault();
+    setFormStatus('');
+    setFormError(false);
+    if (!form.name.trim() || !form.ward.trim() || form.issue.trim().length < 5) {
+      setFormStatus('कृपया नाम, वार्ड नंबर और समस्या सही से भरें।');
+      setFormError(true);
+      return;
+    }
+    if (!isConfiguredPhone()) {
+      setFormStatus('WhatsApp नंबर सेट करना बाकी है। कोड में WHATSAPP_PHONE को देश कोड सहित 12 अंकों के नंबर से बदलें।');
+      setFormError(true);
+      return;
+    }
+    const message = [
+      'श्री रामस्वरूप बरोड़ जी की वेबसाइट से जन-समस्या संदेश',
+      `नाम: ${form.name.trim()}`,
+      `वार्ड नंबर: ${form.ward.trim()}`,
+      `समस्या: ${form.issue.trim()}`,
+    ].join('\n');
+    const url = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+    setFormStatus('WhatsApp खुल रहा है। संदेश भेजने से पहले उसे पढ़कर पुष्टि कर लें।');
+    setFormError(false);
+  };
+
+  const navItems = [
+    ['परिचय', '#parichay'],
+    ['विकास रो संकल्प', '#sankalp'],
+    ['जन-समस्या', '#jan-samvad'],
+  ];
+
+  return (
+    <div className="site-shell">
+      <div className="top-strip"><span className="top-strip-dot" /> ग्राम पंचायत की आवाज़, गाँव के साथ</div>
+      <header className="site-header">
+        <a className="brand" href="#home" aria-label="होम पर जाएँ">
+          <span className="brand-mark brand-photo"><img src={CANDIDATE_PHOTO} alt="श्री रामस्वरूप बरोड़" /></span>
+          <span className="brand-copy"><strong>श्री रामस्वरूप बरोड़</strong><small>सरपंच पद के उम्मीदवार</small></span>
+        </a>
+        <button className="mobile-menu-button" type="button" aria-label={menuOpen ? 'मेन्यू बंद करें' : 'मेन्यू खोलें'} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+          {menuOpen ? <X size={23} /> : <Menu size={23} />}
+        </button>
+        <nav className={menuOpen ? 'main-nav nav-open' : 'main-nav'} aria-label="मुख्य नेविगेशन">
+          {navItems.map(([label, href]) => <a href={href} key={href} onClick={() => setMenuOpen(false)}>{label}</a>)}
+          <button className="nav-cta" type="button" onClick={() => { setMenuOpen(false); openGroup(); }}><WhatsAppIcon size={17} /> WhatsApp से जुड़ें</button>
+        </nav>
+      </header>
+
+      <main>
+        <section className="hero" id="home">
+          <div className="hero-pattern" aria-hidden="true" />
+          <div className="hero-inner">
+            <div className="hero-copy">
+              <div className="eyebrow"><span className="eyebrow-line" /> किकरवाली जोहड़ी के लिए एक नई पहल</div>
+              <h1>गाँव री सेवा,<br /><span>मन सूं, ईमान सूं।</span></h1>
+              <p className="hero-slogan">जिण दानां रो आटा पीस्यो,<br />उण रो कदे न धरस्यो उधार।<br /><em>मेहनत अर ईमानदारी सूं</em><br />करस्यां पंचायत रो विकास अपार!</p>
+              <p className="hero-description">आटा चक्की की मेहनत से सीखा भरोसा और सेवा का भाव—अब गाँव की जरूरतों को सुनने और मिलकर समाधान खोजने का संकल्प।</p>
+              <div className="hero-actions">
+                <button className="button button-whatsapp button-large" onClick={openGroup} type="button"><WhatsAppIcon size={20} /> व्हाट्सएप ग्रुप से जुड़ें <ArrowRight size={18} /></button>
+                <a className="button button-glass button-large" href="#sankalp">विकास रो संकल्प <ArrowDown size={18} /></a>
+              </div>
+              <div className="hero-values"><span><CheckCircle2 size={16} /> सादगी</span><span><CheckCircle2 size={16} /> निष्पक्षता</span><span><CheckCircle2 size={16} /> जन-सुनवाई</span></div>
+            </div>
+            <CandidatePortrait />
+          </div>
+          <a className="hero-scroll" href="#parichay"><span>आगे पढ़ें</span><ArrowDown size={15} /></a>
+        </section>
+
+        <section className="trust-band" aria-label="उम्मीदवार का परिचय">
+          <div className="trust-item"><span className="trust-icon"><Wheat size={20} /></span><div><strong>आटा चक्की का अनुभव</strong><small>मेहनत से जुड़ी पहचान</small></div></div>
+          <div className="trust-item"><span className="trust-icon"><HeartHandshake size={20} /></span><div><strong>सीधा जन-संवाद</strong><small>हर बात सुनने की पहल</small></div></div>
+          <div className="trust-item"><span className="trust-icon"><Landmark size={20} /></span><div><strong>पारदर्शी पंचायत</strong><small>जवाबदेही का संकल्प</small></div></div>
+        </section>
+
+        <section className="section about-section" id="parichay">
+          <div className="section-side-label"><span>01</span> परिचय</div>
+          <div className="about-grid">
+            <div className="about-visual">
+              <div className="about-quote-mark">“</div>
+              <p>जिणां पसीनो बहायो है,<br />उणां रो भरोसेमंद हाथ —</p>
+              <div className="about-visual-rule" />
+              <span>मेहनत की कमाई, सेवा की समझ</span>
+              <Wheat className="about-wheat" size={94} strokeWidth={0.8} />
+            </div>
+            <div className="about-content">
+              <div className="section-kicker">ताऊ रामस्वरूप जी रो परिचय</div>
+              <h2>मेहनत से कमाया भरोसा,<br /><span>गाँव के नाम एक संकल्प।</span></h2>
+              <p>वर्षों तक आटा चक्की चलाना सिर्फ़ रोज़गार नहीं—यह मेहनत, धैर्य और लोगों से रोज़ सीधे जुड़ने का अनुभव है। इसी काम ने सिखाया कि हर परिवार की जरूरत अलग होती है और हर व्यक्ति की बात ध्यान से सुनना जरूरी है।</p>
+              <p>अब इसी सादगी और सेवा-भाव के साथ, गाँव की जरूरी समस्याओं को पहचानने, प्राथमिकताएँ तय करने और ग्राम पंचायत व संबंधित विभागों तक बात पहुँचाने की पहल है। विकास के काम गाँव की भागीदारी और नियमों के अनुसार आगे बढ़ें—यही सोच है।</p>
+              <div className="about-signoff"><span className="signoff-line" /><div><strong>श्री रामस्वरूप बरोड़</strong><small>सरपंच पद के उम्मीदवार</small></div></div>
+              <p className="about-highlight">“गांव री उन्नति खातर, चालो रामस्वरूप ताऊ रे साथ!”</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="section manifesto-section" id="sankalp">
+          <div className="section-heading">
+            <div className="section-kicker">02 / विकास की प्राथमिकताएँ</div>
+            <h2>विकास रो <span>संकल्प</span></h2>
+            <p>गाँव की जरूरतों पर आधारित चार प्रमुख प्राथमिकताएँ। इन कामों को उपलब्ध संसाधनों, ग्राम सभा की राय और संबंधित विभागों के नियमों के अनुसार आगे बढ़ाने का प्रयास रहेगा।</p>
+          </div>
+          <div className="manifesto-grid">
+            {manifesto.map((item) => {
+              const Icon = item.icon;
+              return <article className="manifesto-card" key={item.number}>
+                <div className="card-topline"><span className="card-number">{item.number}</span><span className="manifesto-icon"><Icon size={23} strokeWidth={1.8} /></span></div>
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+                <div className="card-foot"><span>{item.tag}</span><ChevronRight size={17} /></div>
+              </article>;
+            })}
+          </div>
+          <div className="more-priorities"><div className="more-priorities-icon"><Zap size={21} /></div><div><strong>गाँव की दूसरी जरूरी बातें भी उतनी ही अहम</strong><p>स्ट्रीट लाइट, सफ़ाई और कचरा प्रबंधन, पेंशन आवेदन में मदद, किसानों व पशुपालकों की समस्याएँ तथा जरूरत के अनुसार अन्य स्थानीय मुद्दे।</p></div></div>
+        </section>
+
+        <section className="supporter-section" aria-label="जन भागीदारी">
+          <div className="supporter-inner">
+            <div className="supporter-icon"><Users size={28} /></div>
+            <div className="supporter-copy"><span className="section-kicker">गाँव की भागीदारी</span><h2>{Number.isFinite(VERIFIED_SUPPORTER_COUNT) && VERIFIED_SUPPORTER_COUNT > 0 ? `${VERIFIED_SUPPORTER_COUNT.toLocaleString('en-IN')}+` : 'हर आवाज़'} <span>{Number.isFinite(VERIFIED_SUPPORTER_COUNT) && VERIFIED_SUPPORTER_COUNT > 0 ? 'सत्यापित समर्थक' : 'महत्वपूर्ण है'}</span></h2><p>{Number.isFinite(VERIFIED_SUPPORTER_COUNT) && VERIFIED_SUPPORTER_COUNT > 0 ? 'समर्थकों की संख्या सत्यापित रिकॉर्ड के आधार पर दिखाई जा रही है।' : 'अपनी राय, सुझाव या गाँव की समस्या साझा करें—सकारात्मक बदलाव संवाद से शुरू होता है।'}</p></div>
+            <a className="supporter-link" href="#jan-samvad">अपनी बात रखें <ArrowRight size={17} /></a>
+          </div>
+        </section>
+
+        <section className="section issue-section" id="jan-samvad">
+          <div className="issue-grid">
+            <div className="issue-copy">
+              <div className="section-side-label"><span>03</span> जन-संवाद</div>
+              <div className="section-kicker">आपकी समस्या, आपकी आवाज़</div>
+              <h2>जन-समस्या<br /><span>निवारण</span></h2>
+              <p>अपना नाम, वार्ड नंबर और समस्या लिखें। बटन दबाने पर WhatsApp में संदेश तैयार होगा; भेजने से पहले आप उसे देख और बदल सकेंगे।</p>
+              <div className="issue-list">{supportInfo.map(({ icon: Icon, text }) => <div className="issue-list-item" key={text}><span><Icon size={17} /></span>{text}</div>)}</div>
+              <div className="privacy-note"><ShieldCheck size={18} /><span>कृपया आधार नंबर, बैंक विवरण या अन्य संवेदनशील निजी जानकारी साझा न करें।</span></div>
+            </div>
+            <form className="issue-form" onSubmit={submitIssue}>
+              <div className="form-header"><div><span className="form-eyebrow">सीधा संदेश</span><h3>अपनी बात लिखें</h3></div><span className="form-icon"><MessageCircle size={24} /></span></div>
+              <label htmlFor="resident-name">आपका नाम <span>*</span></label>
+              <input id="resident-name" name="name" autoComplete="name" maxLength={80} required placeholder="पूरा नाम लिखें" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              <label htmlFor="ward-number">वार्ड नंबर <span>*</span></label>
+              <input id="ward-number" name="ward" maxLength={30} required placeholder="जैसे — वार्ड 4" value={form.ward} onChange={(e) => setForm({ ...form, ward: e.target.value })} />
+              <label htmlFor="issue-detail">आपकी समस्या <span>*</span></label>
+              <textarea id="issue-detail" name="issue" required minLength={5} maxLength={1000} rows={4} placeholder="समस्या और जगह की जानकारी लिखें…" value={form.issue} onChange={(e) => setForm({ ...form, issue: e.target.value })} />
+              <div className="form-counter">{form.issue.length}/1000 अक्षर</div>
+              <button type="submit" className="button button-whatsapp button-submit"><WhatsAppIcon size={20} /> सीधा WhatsApp पर संदेश भेजें <Send size={17} /></button>
+              {formStatus && <p className={formError ? 'form-status form-status-error' : 'form-status'} role="status">{formStatus}</p>}
+              <small className="form-disclaimer">यह फॉर्म WhatsApp संदेश तैयार करता है। संदेश अपने-आप नहीं भेजा जाता।</small>
+            </form>
+          </div>
+        </section>
+
+        <section className="closing-cta">
+          <div className="closing-pattern" aria-hidden="true" />
+          <div className="closing-content"><div className="section-kicker">गाँव के साथ, गाँव के लिए</div><h2>बात गाँव की हो,<br /><span>तो फैसला भी गाँव की राय से।</span></h2><p>सुझाव दें, समस्या बताएँ और गाँव के भविष्य पर संवाद में शामिल हों।</p><button className="button button-light button-large" type="button" onClick={openGroup}><WhatsAppIcon size={20} /> WhatsApp समूह से जुड़ें <ArrowRight size={18} /></button></div>
+        </section>
+      
+        {/* BPraxis Advanced Sections v1 */}
+        <AdvancedManifestoSection />
+        <CampaignTestimonialsSection />
+        <CandidateOathSection />
+        <CampaignShareSection />
+
+      
+        {/* BPraxis Advanced Sections v1 */}
+            <OfficialCampaignPoster />
+      </main>
+
+      <footer className="site-footer">
+        <div className="footer-main"><a className="brand brand-footer" href="#home"><span className="brand-mark brand-photo"><img src={CANDIDATE_PHOTO} alt="श्री रामस्वरूप बरोड़" /></span><span className="brand-copy"><strong>श्री रामस्वरूप बरोड़</strong><small>सरपंच पद के उम्मीदवार</small></span></a><p>मेहनत, सादगी और जन-संवाद के साथ—गाँव की जरूरतों को मिलकर समझने की पहल।</p><a className="footer-top" href="#home">ऊपर जाएँ <ArrowDown size={15} /></a></div>
+        <div className="footer-bottom"><span>© {new Date().getFullYear()} श्री रामस्वरूप बरोड़</span><span><MapPin size={14} /> किकरवाली जोहड़ी, तहसील सूरतगढ़, राजस्थान</span><span className="footer-note">सभी विकास बिंदु प्रस्तावित प्राथमिकताएँ हैं, पूर्ण हो चुके कार्यों का दावा नहीं।</span></div>
+        <div className="developer-credit">Designed &amp; Developed with <span aria-label="love" role="img">❤️</span> by <strong>Jitendra Soni</strong></div>
+      </footer>
+
+      <button className="floating-whatsapp" type="button" aria-label="WhatsApp से जुड़ें" onClick={openGroup}><WhatsAppIcon size={25} /><span>WhatsApp</span></button>
+    </div>
+  );
+}

@@ -1,0 +1,59 @@
+-- Run in Supabase SQL Editor. Review before production use.
+create extension if not exists pgcrypto;
+
+create table if not exists public.public_messages (
+  id uuid primary key default gen_random_uuid(),
+  display_name text null check (display_name is null or char_length(display_name) <= 60),
+  village_name text null,
+  category text not null check (category in ('जन समर्थन', 'सुझाव', 'शुभकामना', 'स्थानीय समस्या')),
+  message text not null check (char_length(message) between 4 and 500),
+  photo_url text null,
+  status text not null default 'pending' check (status in ('pending', 'approved', 'rejected', 'spam')),
+  created_at timestamptz not null default now()
+);
+
+alter table public.public_messages add column if not exists photo_url text null;
+alter table public.public_messages add column if not exists village_name text null;
+
+-- Supabase SQL Editor में एक बार चलाएँ.
+alter table public.public_messages add column if not exists village_name text null;
+alter table public.public_messages drop constraint if exists public_messages_category_check;
+alter table public.public_messages add constraint public_messages_category_check
+  check (category in ('जन समर्थन', 'सुझाव', 'शुभकामना', 'स्थानीय समस्या'));
+
+alter table public.public_messages enable row level security;
+
+-- Public users can only submit pending messages. They cannot read pending messages
+-- or set status to approved through the browser.
+drop policy if exists "Public can submit pending messages" on public.public_messages;
+create policy "Public can submit pending messages"
+on public.public_messages for insert
+to anon, authenticated
+with check (status = 'pending');
+
+drop policy if exists "Public can read approved messages" on public.public_messages;
+create policy "Public can read approved messages"
+on public.public_messages for select
+to anon, authenticated
+using (status = 'approved');
+
+-- No public update/delete policies: moderation must happen through a trusted admin path.
+-- For a production admin dashboard, create a Supabase Auth admin user and add a
+-- separate admin-only policy based on a verified role/claim. Do not rely on a hidden
+-- frontend route or a hard-coded password.
+
+
+-- Optional photos attached to public suggestions. Review uploaded photos before approving a message.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('suggestion-photos', 'suggestion-photos', true, 2097152, array['image/jpeg','image/png','image/webp'])
+on conflict (id) do update set public = true, file_size_limit = 2097152, allowed_mime_types = array['image/jpeg','image/png','image/webp'];
+
+drop policy if exists "Anyone can upload suggestion photos" on storage.objects;
+create policy "Anyone can upload suggestion photos" on storage.objects
+for insert to anon, authenticated
+with check (bucket_id = 'suggestion-photos' and lower(storage.extension(name)) in ('jpg','jpeg','png','webp'));
+
+drop policy if exists "Public can view suggestion photos" on storage.objects;
+create policy "Public can view suggestion photos" on storage.objects
+for select to anon, authenticated
+using (bucket_id = 'suggestion-photos');
