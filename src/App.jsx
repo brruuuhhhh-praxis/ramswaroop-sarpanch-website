@@ -162,8 +162,12 @@ function SupportButton() {
 
   async function shareSupport() {
     const message =
-      "ताऊ रामस्वरूप बरोड को अपना मत देकर विजयी बनाओ\n" +
-      window.location.origin;
+      "🙏 गाँव के विकास और बेहतर भविष्य के लिए आइए, मिलकर सकारात्मक बदलाव का साथ दें।\n\n" +
+      "🌿 ताऊ रामस्वरूप बरोड़ के समर्थन में यह संदेश अपने परिवार और मित्रों तक पहुँचाएँ।\n\n" +
+      "मेहनत • ईमानदारी • जनसेवा\n" +
+      "🔗 वेबसाइट: " +
+      window.location.origin +
+      window.location.pathname;
 
     try {
       if (navigator.share) {
