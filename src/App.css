@@ -2227,23 +2227,3 @@ button { cursor: pointer; }
     font-size: 14px !important;
   }
 }
-
-/* Mobile fix: keep developer credit visible above fixed contact buttons */
-@media (max-width: 680px) {
-  .footer {
-    padding-bottom: calc(90px + env(safe-area-inset-bottom)) !important;
-    overflow: visible !important;
-  }
-
-  .footer .developer-credit-banner {
-    display: block !important;
-    position: relative !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    width: 100% !important;
-    height: auto !important;
-    box-sizing: border-box !important;
-    padding: 15px 12px !important;
-    text-align: center !important;
-  }
-}
