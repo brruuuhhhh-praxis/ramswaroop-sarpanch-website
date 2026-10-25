@@ -2450,3 +2450,468 @@ button { cursor: pointer; }
     transition: none !important;
   }
 }
+
+
+/* PREMIUM GALLERY PATCH V1 */
+.gallery-grid .photo-tile {
+  margin: 0;
+  isolation: isolate;
+  background: #e9eee7;
+  box-shadow: 0 8px 22px rgba(16, 47, 35, .08);
+  transition: transform .22s ease, box-shadow .22s ease;
+}
+.gallery-grid .photo-tile img {
+  transition: transform .45s ease;
+}
+.gallery-grid .photo-tile:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 32px rgba(16, 47, 35, .16);
+}
+.gallery-grid .photo-tile:hover img {
+  transform: scale(1.035);
+}
+.photo-caption {
+  position: absolute;
+  z-index: 2;
+  inset: auto 0 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 30px 14px 13px;
+  color: #fff;
+  background: linear-gradient(transparent, rgba(10, 34, 23, .86));
+  pointer-events: none;
+}
+.photo-caption span {
+  display: grid;
+  place-items: center;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(255,255,255,.55);
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 800;
+}
+.photo-caption b {
+  font-size: 12px;
+  line-height: 1.65;
+  font-weight: 700;
+}
+.photo-missing .photo-caption {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .gallery-grid .photo-tile,
+  .gallery-grid .photo-tile img {
+    transition: none;
+  }
+  .gallery-grid .photo-tile:hover {
+    transform: none;
+  }
+  .gallery-grid .photo-tile:hover img {
+    transform: none;
+  }
+}
+
+
+/* PREMIUM FRONTEND REDESIGN V2 */
+:root {
+  --green: #174c34;
+  --green-dark: #102f23;
+  --orange: #e98732;
+  --cream: #fff9ef;
+  --muted: #65756a;
+}
+
+body {
+  background: #fcfbf7;
+  color: #24382c;
+}
+
+.site-header {
+  background: rgba(255,253,248,.97) !important;
+  box-shadow: 0 8px 24px rgba(22,59,39,.08);
+  backdrop-filter: blur(12px);
+}
+
+.brand-face-icon {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+.hero {
+  grid-template-columns: minmax(0,1.04fr) minmax(0,.96fr) !important;
+  align-items: center !important;
+  gap: clamp(20px,4vw,55px) !important;
+  padding-top: clamp(40px,6vw,76px) !important;
+  padding-bottom: clamp(35px,5vw,62px) !important;
+  background:
+    radial-gradient(circle at 84% 34%,rgba(207,233,207,.7),transparent 32%),
+    linear-gradient(118deg,#fffaf1 0%,#fff7e9 51%,#edf6ed 51%,#f8fcf7 100%) !important;
+}
+
+.hero-copy { z-index: 2; max-width: 640px !important; }
+.hero h1 { line-height: 1.15; letter-spacing: -1.5px; }
+
+.main-slogan {
+  padding: 14px 17px !important;
+  border-left: 4px solid var(--orange) !important;
+  border-radius: 0 12px 12px 0;
+  background: rgba(255,255,255,.75);
+  box-shadow: 0 8px 25px rgba(42,63,43,.06);
+}
+
+.hero-buttons .button {
+  min-height: 47px;
+  border-radius: 10px;
+  box-shadow: 0 5px 14px rgba(28,60,40,.08);
+}
+
+.button-orange {
+  background: linear-gradient(135deg,#ed963e,#dc7624) !important;
+}
+
+.hero-visual {
+  grid-column: 2;
+  position: relative;
+  min-width: 0;
+  min-height: 490px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
+}
+
+.hero-visual::before {
+  content: "";
+  position: absolute;
+  width: 370px;
+  height: 370px;
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 50%;
+  background: linear-gradient(145deg,#fff, #d8ead6);
+  border: 1px solid #cbdcc8;
+  box-shadow: 0 20px 60px rgba(29,79,47,.09);
+  z-index: -1;
+}
+
+.hero-visual .portrait {
+  width: min(78%,370px) !important;
+  height: 455px !important;
+  border: 8px solid #fff;
+  border-radius: 185px 185px 20px 20px !important;
+  box-shadow: 0 25px 60px rgba(26,67,42,.2);
+}
+
+.hero-visual .portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.hero-visual .portrait-caption {
+  left: 0;
+  bottom: 18px;
+  max-width: 86%;
+  border: 1px solid #e1e8dc;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(22,58,37,.13);
+}
+
+.hero-visual .portrait-caption p { margin: 0; }
+
+.hero-visual .symbol-box {
+  right: -2px;
+  top: 30px;
+  width: 150px;
+  border: 1px solid #d8e3cf;
+  border-radius: 14px;
+  background: rgba(255,253,245,.97);
+  box-shadow: 0 10px 28px rgba(31,71,41,.1);
+}
+
+.hero-visual .hero-seal {
+  right: 0;
+  bottom: 6px;
+  box-shadow: 0 8px 20px rgba(31,71,41,.12);
+}
+
+.hero .hero-neon-slogan {
+  position: relative !important;
+  inset: auto !important;
+  grid-column: 1 / -1 !important;
+  justify-self: center;
+  width: min(100%,980px) !important;
+  max-width: 980px !important;
+  margin: 20px auto 0 !important;
+  padding: 22px clamp(14px,3vw,30px) !important;
+  border: 1px solid #d5e7d4;
+  border-radius: 18px;
+  background: linear-gradient(120deg,#fff, #e9f6e8);
+  box-shadow: 0 12px 35px rgba(23,76,52,.09);
+}
+
+.hero .hero-neon-slogan p,
+.hero .hero-neon-slogan strong {
+  color: #214f35;
+  text-shadow: none;
+}
+
+.section-title { margin-bottom: 36px; }
+.title-line { width: 62px; height: 4px; }
+
+.candidate-message-card {
+  padding: clamp(20px,3vw,38px);
+  border: 1px solid #e6e8dc;
+  border-radius: 18px;
+  background: linear-gradient(145deg,#fffefa,#fff8ec);
+  box-shadow: 0 13px 36px rgba(35,65,39,.07);
+}
+
+.priority-grid { gap: 18px; }
+
+.priority-card {
+  border: 1px solid #e2e8dc !important;
+  border-top: 4px solid var(--orange) !important;
+  border-radius: 15px !important;
+  background: linear-gradient(150deg,#fffefa,#f7fbf3) !important;
+  box-shadow: 0 8px 25px rgba(27,65,40,.07);
+}
+
+.gallery-grid .photo-tile {
+  border-radius: 14px;
+  box-shadow: 0 8px 22px rgba(31,55,35,.08);
+}
+
+.contact {
+  background:
+    radial-gradient(circle at 100% 0%,rgba(78,128,83,.22),transparent 32%),
+    linear-gradient(125deg,#123525,#245a40);
+}
+
+.problem-form {
+  border: 1px solid rgba(255,255,255,.7);
+  border-radius: 17px;
+}
+
+.problem-form input,
+.problem-form select,
+.problem-form textarea {
+  border-radius: 9px;
+}
+
+@media (max-width:780px) {
+  .hero {
+    grid-template-columns: minmax(0,1fr) !important;
+    gap: 19px !important;
+    padding: 34px 18px 30px !important;
+    background:
+      radial-gradient(circle at 90% 31%,rgba(216,236,214,.8),transparent 29%),
+      linear-gradient(160deg,#fffaf0 0%,#fff7e9 49%,#f1f8ef 49%,#f8fcf7 100%) !important;
+  }
+
+  .hero-copy { width: 100%; margin: 0 auto; }
+
+  .hero h1 {
+    font-size: clamp(47px,12.5vw,70px) !important;
+    line-height: 1.22;
+  }
+
+  .hero-visual {
+    grid-column: 1;
+    width: 100%;
+    max-width: 430px;
+    min-height: 380px;
+    margin: 0 auto;
+  }
+
+  .hero-visual .portrait {
+    width: min(70vw,300px) !important;
+    height: auto !important;
+    aspect-ratio: .72;
+    border-width: 6px;
+    border-radius: 150px 150px 16px 16px !important;
+  }
+
+  .hero-visual .portrait img { height: 100%; }
+
+  .hero-visual .symbol-box {
+    top: 3px;
+    right: 0;
+    width: min(34%,125px);
+    min-height: 88px;
+    padding: 9px 6px;
+  }
+
+  .hero-visual .symbol-box span { font-size: 9px; }
+  .hero-visual .symbol-box b { font-size: 11px; }
+  .hero-visual .symbol-box small { font-size: 8px; }
+
+  .hero-visual .portrait-caption {
+    left: 0;
+    bottom: 12px;
+    padding: 9px 11px;
+  }
+
+  .hero-visual .hero-seal {
+    width: 64px;
+    height: 64px;
+    right: 0;
+    bottom: 0;
+  }
+
+  .hero .hero-neon-slogan {
+    grid-column: 1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 4px 0 0 !important;
+    padding: 17px 12px !important;
+    border-radius: 15px;
+  }
+
+  .hero .hero-neon-slogan p,
+  .hero .hero-neon-slogan strong {
+    font-size: 15px !important;
+    line-height: 1.8;
+  }
+
+  .section {
+    padding-left: 17px !important;
+    padding-right: 17px !important;
+  }
+
+  .candidate-message-card {
+    padding: 20px 16px !important;
+    border-radius: 15px;
+  }
+
+  .priority-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+    gap: 12px;
+  }
+
+  .priority-card {
+    min-width: 0;
+    padding: 15px !important;
+  }
+
+  .priority-card h3 { font-size: 15px; line-height: 1.6; }
+  .priority-card p { font-size: 12px; line-height: 1.8; }
+  .gallery-grid .photo-tile { border-radius: 11px; }
+  .contact { gap: 24px; }
+  .problem-form { padding: 20px 15px; }
+}
+
+@media (max-width:420px) {
+  .hero-buttons .button {
+    padding: 12px 9px;
+    font-size: 11px;
+  }
+
+  .priority-grid {
+    grid-template-columns: minmax(0,1fr) !important;
+  }
+}
+
+/* Hero layout after removing duplicate portrait */
+/* Hero layout after removing duplicate portrait */
+.hero {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+.hero .hero-copy {
+  width: 100% !important;
+  max-width: 760px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.hero .hero-neon-slogan {
+  position: relative !important;
+  inset: auto !important;
+  transform: none !important;
+  align-self: center !important;
+  width: 100% !important;
+  max-width: 760px !important;
+  box-sizing: border-box !important;
+  margin: 28px auto 0 !important;
+}
+
+
+/* VILLAGE-BACKGROUND-PATCH-v1 */
+body {
+  min-height: 100vh;
+  background-image:
+    linear-gradient(
+      rgba(255, 253, 248, 0.70),
+      rgba(244, 248, 239, 0.76)
+    ),
+    url('/village-background.png');
+  background-position: center, center;
+  background-size: cover, cover;
+  background-attachment: fixed, fixed;
+  background-repeat: no-repeat;
+}
+
+/* Keep village background visible behind readable sections */
+.hero,
+.about,
+.priorities,
+.social,
+.gallery {
+  background: rgba(255, 253, 248, 0.68) !important;
+}
+
+/* FINAL VILLAGE BACKGROUND FIX */
+html {
+  min-height: 100%;
+  background: #f8f5eb;
+}
+
+body {
+  min-height: 100vh;
+  position: relative;
+  isolation: isolate;
+  background: transparent !important;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(
+      rgba(255, 253, 248, 0.00),
+      rgba(244, 248, 239, 0.00)
+    ),
+    url("/village-background.png");
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Remove opaque section backgrounds so the image can be seen */
+#root,
+main,
+.hero,
+.about,
+.priorities,
+.social,
+.gallery {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* FINAL VILLAGE BACKGROUND FIX END */
