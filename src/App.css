@@ -2314,3 +2314,51 @@ button { cursor: pointer; }
     padding: 16px !important;
   }
 }
+
+/* Mobile UI Patch: prevent fixed contact bar from covering content */
+:root {
+  --mobile-contact-bar-height: 96px;
+}
+
+@media (max-width: 780px) {
+  html {
+    scroll-padding-bottom: calc(
+      var(--mobile-contact-bar-height) + env(safe-area-inset-bottom) + 16px
+    );
+  }
+
+  body {
+    padding-bottom: calc(
+      var(--mobile-contact-bar-height) + env(safe-area-inset-bottom) + 12px
+    );
+  }
+
+  /* Keep the bottom action bar above the phone's safe area */
+  .mobile-actions {
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+    z-index: 1000;
+  }
+
+  /* Avoid anchor headings being hidden behind sticky/fixed UI */
+  section[id],
+  div[id] {
+    scroll-margin-bottom: calc(
+      var(--mobile-contact-bar-height) + env(safe-area-inset-bottom) + 16px
+    );
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --mobile-contact-bar-height: 90px;
+  }
+
+  .navigation a {
+    min-height: 44px;
+  }
+
+  .mobile-actions a,
+  .mobile-actions button {
+    min-height: 48px;
+  }
+}
