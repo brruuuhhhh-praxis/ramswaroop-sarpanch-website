@@ -30,6 +30,14 @@ const photos = [
   [(import.meta.env.BASE_URL + "gallery-2.jpg"), "ग्रामवासियों के साथ मुलाकात"],
   [(import.meta.env.BASE_URL + "gallery-3.jpg"), "गाँव की गतिविधि"],
   [(import.meta.env.BASE_URL + "gallery-4.jpg"), "ग्रामीणों के साथ संवाद"],
+  [(import.meta.env.BASE_URL + "rural-meet-01.webp"), "जनसंपर्क और ग्रामीण गतिविधि 1"],
+  [(import.meta.env.BASE_URL + "rural-meet-02.webp"), "जनसंपर्क और ग्रामीण गतिविधि 2"],
+  [(import.meta.env.BASE_URL + "rural-meet-03.webp"), "जनसंपर्क और ग्रामीण गतिविधि 3"],
+  [(import.meta.env.BASE_URL + "rural-meet-04.webp"), "जनसंपर्क और ग्रामीण गतिविधि 4"],
+  [(import.meta.env.BASE_URL + "rural-meet-05.webp"), "जनसंपर्क और ग्रामीण गतिविधि 5"],
+  [(import.meta.env.BASE_URL + "rural-meet-06.webp"), "जनसंपर्क और ग्रामीण गतिविधि 6"],
+  [(import.meta.env.BASE_URL + "rural-meet-07.webp"), "जनसंपर्क और ग्रामीण गतिविधि 7"],
+  [(import.meta.env.BASE_URL + "rural-meet-08.webp"), "जनसंपर्क और ग्रामीण गतिविधि 8"],
 ];
 
 function SectionTitle({ tag, title, desc }) {
@@ -43,23 +51,30 @@ function SectionTitle({ tag, title, desc }) {
   );
 }
 
+/* PREMIUM GALLERY PATCH V1 */
 function Photo({ src, alt, number }) {
   return (
-    <div className="photo-tile">
+    <figure className="photo-tile">
       <img
         src={src}
         alt={alt}
+        loading="lazy"
+        decoding="async"
         onError={(e) => {
           e.currentTarget.style.display = "none";
           e.currentTarget.parentElement.classList.add("photo-missing");
         }}
       />
-      <div className="photo-placeholder">
+      <div className="photo-placeholder" aria-hidden="true">
         <span>📷</span>
-        <b>फोटो {number}</b>
-        <small>{src}</small>
+        <b>{alt || `फोटो ${number}`}</b>
+        <small>तस्वीर फिलहाल उपलब्ध नहीं है</small>
       </div>
-    </div>
+      <figcaption className="photo-caption">
+        <span>{String(number).padStart(2, "0")}</span>
+        <b>{alt}</b>
+      </figcaption>
+    </figure>
   );
 }
 
@@ -251,6 +266,10 @@ function HomePage() {
           <SupportButton />
           <p className="hero-note">जनता की बात सुनना · समस्याएँ समझना · समाधान की पहल</p>
         </div>
+
+
+
+
 
         
       
