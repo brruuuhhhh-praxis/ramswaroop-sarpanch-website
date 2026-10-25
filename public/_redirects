@@ -1,3 +1,0 @@
-# Single-page app fallback. The app currently navigates in client state; this also
-# keeps future direct routes from returning a Netlify 404.
-/*    /index.html   200
