@@ -26,10 +26,10 @@ const priorities = [
 ];
 
 const photos = [
-  ["/gallery-1.jpg", "जनसंपर्क की तस्वीर"],
-  ["/gallery-2.jpg", "ग्रामवासियों के साथ मुलाकात"],
-  ["/gallery-3.jpg", "गाँव की गतिविधि"],
-  ["/gallery-4.jpg", "ग्रामीणों के साथ संवाद"],
+  [(import.meta.env.BASE_URL + "gallery-1.jpg"), "जनसंपर्क की तस्वीर"],
+  [(import.meta.env.BASE_URL + "gallery-2.jpg"), "ग्रामवासियों के साथ मुलाकात"],
+  [(import.meta.env.BASE_URL + "gallery-3.jpg"), "गाँव की गतिविधि"],
+  [(import.meta.env.BASE_URL + "gallery-4.jpg"), "ग्रामीणों के साथ संवाद"],
 ];
 
 function SectionTitle({ tag, title, desc }) {
@@ -87,7 +87,7 @@ function Header() {
 
       <header className="site-header">
         <Link className="brand" to="/" onClick={() => setMenuOpen(false)}>
-          <img className="brand-face-icon" src="/candidate-face.png" alt="श्री रामस्वरूप बरोड़" />
+          <img className="brand-face-icon" src={import.meta.env.BASE_URL + "candidate-face.png"} alt="श्री रामस्वरूप बरोड़" />
           <span className="brand-text">
             <b>श्री रामस्वरूप बरोड़</b>
             <small>सरपंच पद के उम्मीदवार</small>
@@ -284,7 +284,7 @@ function HomePage() {
           </div>
         </div>
           <div className="candidate-message-photo">
-            <img src="/candidate-full.png" alt="श्री रामस्वरूप बरोड़ की पूरी राजस्थानी पोशाक वाली तस्वीर" />
+            <img src={import.meta.env.BASE_URL + "candidate-full.png"} alt="श्री रामस्वरूप बरोड़ की पूरी राजस्थानी पोशाक वाली तस्वीर" />
           </div>
         </div>
       </section>
@@ -355,7 +355,7 @@ function AboutPage() {
       />
       <div className="about-grid">
         <div className="about-picture">
-          <Photo src="/gallery-1.jpg" alt="जनसंपर्क की तस्वीर" number="1" />
+          <Photo src={import.meta.env.BASE_URL + "gallery-1.jpg"} alt="जनसंपर्क की तस्वीर" number="1" />
           <span>कीकर वाली जोहड़ी · जनसंपर्क</span>
         </div>
         <div className="about-copy">
