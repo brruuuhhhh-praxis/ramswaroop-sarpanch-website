@@ -165,9 +165,7 @@ function SupportButton() {
       "🙏 गाँव के विकास और बेहतर भविष्य के लिए आइए, मिलकर सकारात्मक बदलाव का साथ दें।\n\n" +
       "🌿 ताऊ रामस्वरूप बरोड़ के समर्थन में यह संदेश अपने परिवार और मित्रों तक पहुँचाएँ।\n\n" +
       "मेहनत • ईमानदारी • जनसेवा\n" +
-      "🔗 वेबसाइट: " +
-      window.location.origin +
-      window.location.pathname;
+      "🔗 वेबसाइट: https://brruuuhhhh-praxis.github.io/ramswaroop-sarpanch-website/";
 
     try {
       if (navigator.share) {
