@@ -3019,3 +3019,132 @@ button:focus-visible,
 }
 
 /* PREMIUM 3D BUTTONS END */
+/* घोषणापत्र: विस्तार से खुलने वाले संकल्प-कार्ड */
+.manifesto-intro {
+  max-width: 880px;
+  margin: -12px auto 34px;
+  padding: 22px 26px;
+  border: 1px solid #eadbc6;
+  border-left: 4px solid var(--orange);
+  border-radius: 12px;
+  background: #fffdf8;
+  box-shadow: 0 8px 24px #173f2a08;
+}
+.manifesto-intro p {
+  margin: 0;
+  color: #4e5d51;
+  font-size: 14px;
+  line-height: 2;
+}
+.manifesto-grid { align-items: start; }
+.manifesto-card { height: 100%; }
+.manifesto-card > p { min-height: 49px; }
+.manifesto-details {
+  margin-top: 18px;
+  border-top: 1px solid #eee5d7;
+}
+.manifesto-details summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 46px;
+  padding: 12px 0 2px;
+  color: #176b43;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  list-style: none;
+}
+.manifesto-details summary::-webkit-details-marker { display: none; }
+.manifesto-details summary span {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: 50%;
+  background: #edf5ec;
+  color: #176b43;
+  font-size: 18px;
+  transition: transform .2s ease;
+}
+.manifesto-details[open] summary span { transform: rotate(45deg); }
+.manifesto-details summary:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+.manifesto-detail-content {
+  padding: 10px 0 4px;
+  border-top: 1px dashed #e7ddce;
+}
+.manifesto-detail-content section { margin: 0 0 17px; }
+.manifesto-detail-content h4 {
+  margin: 0 0 7px;
+  color: #a75a1b;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.manifesto-detail-content p,
+.manifesto-detail-content li {
+  color: #536357;
+  font-size: 11px;
+  line-height: 1.95;
+}
+.manifesto-detail-content p { margin: 0; }
+.manifesto-detail-content ul {
+  margin: 0;
+  padding-left: 19px;
+}
+.manifesto-detail-content li { padding-left: 3px; margin: 0 0 6px; }
+.manifesto-detail-content li::marker { color: #16834a; }
+.manifesto-detail-content .manifesto-timeline {
+  margin-top: 17px;
+  padding: 14px;
+  border-radius: 8px;
+  background: #f1f7ef;
+  border: 1px solid #dfeade;
+}
+.manifesto-detail-content .manifesto-timeline h4 { color: #176b43; }
+.manifesto-closing {
+  max-width: 880px;
+  margin: 38px auto 0;
+  padding: 30px clamp(20px, 5vw, 42px);
+  text-align: center;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #153b2b, #24563e);
+  color: #fff;
+}
+.manifesto-closing .eyebrow { color: #ffbd78; }
+.manifesto-closing h3 {
+  margin: 10px auto;
+  max-width: 720px;
+  color: #fff;
+  font-size: clamp(21px, 3vw, 30px);
+  line-height: 1.6;
+}
+.manifesto-closing p {
+  max-width: 690px;
+  margin: 0 auto;
+  color: #d4e1d6;
+  font-size: 12px;
+  line-height: 2;
+}
+@media (max-width: 780px) {
+  .manifesto-intro { margin: -6px auto 24px; padding: 17px; }
+  .manifesto-intro p { font-size: 12px; line-height: 1.95; }
+  .manifesto-grid { grid-template-columns: 1fr 1fr; gap: 11px; }
+  .manifesto-card { padding: 17px 14px; }
+  .manifesto-card > p { min-height: 0; }
+  .manifesto-details summary { font-size: 11px; }
+  .manifesto-detail-content p, .manifesto-detail-content li { font-size: 11px; }
+  .manifesto-closing { margin-top: 28px; padding: 24px 18px; }
+}
+@media (max-width: 480px) {
+  .manifesto-grid { grid-template-columns: 1fr; }
+  .manifesto-card { padding: 19px 17px; }
+  .manifesto-card > p { font-size: 12px; }
+  .manifesto-detail-content p, .manifesto-detail-content li { font-size: 12px; }
+  .manifesto-details summary { min-height: 48px; font-size: 12px; }
+}
